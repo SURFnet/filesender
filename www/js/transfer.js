@@ -54,7 +54,7 @@ class Fabrique {
     // Add classes to designate steps, hide step 2 elements
     this.overallDiv = $('#upload_form');
     this.uploadArea = $('#upload_form').children().first().addClass('step1');
-    $('.instructions').text(lang.tr('Drop or select files to send'));
+    $('.instructions').text(lang.tr('ui2_select_files'));
     this.basicFileSelector = $('.file_selector');
     this.filesActions = $('.files_actions');
     this.splitOnColon();
@@ -62,15 +62,15 @@ class Fabrique {
     this.termsLink = $('.terms').children().first().detach();
     this.termsLink.html('Code of Conduct');
 
-    this.termsLabel = $('label[for="aup"]').html(`${lang.tr('I accept the following')} ${$(this.termsLink)[0].outerHTML} ${lang.tr('when using this service.')}`);
+    this.termsLabel = $('label[for="aup"]').html(`${lang.tr('ui2_accept_aup_1')} ${$(this.termsLink)[0].outerHTML} ${lang.tr('ui2_accept_aup_2')}`);
     this.termsLabel.attr('title', '');
 
-    this.labelEncrypt = $('label[for="encryption"]').children().first().children().first().text(lang.tr('Send files securely (max 2 GB)'));
+    this.labelEncrypt = $('label[for="encryption"]').children().first().children().first().text(lang.tr('ui2_send_secure'));
     this.encryptionArea = $('#encrypt_checkbox');
     this.encryptionArea.append('<span id="tooltip_encrypt_toggle">[i]</span>');
     this.encryptionDescription = $('#tooltip_encrypt_toggle');
     this.encryptionToggled = false;
-    this.showPasswordCheckbox = $('label[for="encryption_show_password"]').text(lang.tr('Show password'));
+    this.showPasswordCheckbox = $('label[for="encryption_show_password"]').text(lang.tr('show_password'));
     this.encryptionDescriptionContainer = $('#encryption_description_container').hide();
     this.encryptionDescriptionContainer.html(this.encryptionDescriptionContainer.html().replace(new RegExp("&nbsp;","gm"), ''));
 
@@ -78,7 +78,7 @@ class Fabrique {
     this.uploadButtons = $('.buttons').addClass('step2').hide();
 
     this.labelFrom = $('label[for="from"]').first().parent().hide();
-    this.labelUpload = $('label[for="files"]').html(lang.tr('Add files'));
+    this.labelUpload = $('label[for="files"]').html(lang.tr('ui2_add_files'));
     this.terms = $('.aup').first();
     this.encryptPassword = $('#encryption_password_container');
     $('#get_a_link').parent().hide();
@@ -129,9 +129,9 @@ class Fabrique {
     // Add the div that collapses/shrinks when step 2 is active
     this.filesListBack = $(`
                             <div id="filesList" class="step2">
-                                <div class="infoDiv fileCountDiv"><span id="fileCount"></span> ${lang.tr('file(s) added')} </div>
-                                <div class=infoDiv fileSizeDiv">${lang.tr('Total size')} <span id="fileSize"></span> / <span id="maxFileSize"></span></div>
-                                <div class=infoDiv encryptDiv"><span>${lang.tr('End-to-end encryption is')} </span> <span id="encryptionStatus"></span></div>
+                                <div class="infoDiv fileCountDiv"><span id="fileCount"></span> ${lang.tr('ui2_files_added')} </div>
+                                <div class=infoDiv fileSizeDiv">${lang.tr('ui2_total_size')} <span id="fileSize"></span> / <span id="maxFileSize"></span></div>
+                                <div class=infoDiv encryptDiv"><span>${lang.tr('ui2_encryption_status')} </span> <span id="encryptionStatus"></span></div>
                             </div>
     `).hide();
     this.overallDiv.prepend(this.filesListBack);
@@ -156,10 +156,10 @@ class Fabrique {
     this.uploadDone = $(`
     <div id="uploadDone" class="step3">
         <div></div>
-        <div><span id="done" class="done_text">${lang.tr('All done!')}</span></div>
+        <div><span id="done" class="done_text">${lang.tr('ui2_done')}</span></div>
         <div id="downloadLinkArea"><span id="uploadVariantReport"></span></div>
 
-        <a href="?s=transfers" id="myTransfers">${lang.tr('View my transfers')}</a>
+        <a href="?s=transfers" id="myTransfers">${lang.tr('ui2_my_transfers')}</a>
     </div>
     `).hide();
     this.overallDiv.append(this.uploadDone);
@@ -264,8 +264,8 @@ class Fabrique {
     $('#upload_mode_title').hide();
 
     // Set standard texts for the email/link toggle
-    $('label[for="get_a_link"]').text(lang.tr('or send files by email'));
-    $('#upload_mode_title').text(lang.tr('Create download link'));
+    $('label[for="get_a_link"]').text(lang.tr('ui2_or_mode_mail'));
+    $('#upload_mode_title').text(lang.tr('ui2_mode_link'));
 
   }
 
@@ -399,13 +399,13 @@ class Fabrique {
     if($('body').hasClass('step2')) {
         if(showEmail) {
             $('#encrypt_checkbox').parent().show();
-            $('#upload_mode_title').text(lang.tr('Send by email'));
-            $('label[for="get_a_link"]').text(lang.tr('or create download link'));
+            $('#upload_mode_title').text(lang.tr('ui2_mode_mail'));
+            $('label[for="get_a_link"]').text(lang.tr('ui2_or_mode_link'));
         }
         else {
             $('#encrypt_checkbox').parent().hide();
-            $('#upload_mode_title').text(lang.tr('Create download link'));
-            $('label[for="get_a_link"]').text(lang.tr('or send files by email'));
+            $('#upload_mode_title').text(lang.tr('ui2_mode_link'));
+            $('label[for="get_a_link"]').text(lang.tr('ui2_or_mode_mail'));
         }
     }
   }

@@ -87,8 +87,8 @@ class FabriqueTransferList {
   }
 
   setTableTitles() {
-      $('[data-status=available]').before(`<h2>${lang.tr('Available transfers')}</h2>`);
-      $('[data-status=closed]').before(`<h2>${lang.tr('Closed transfers')}</h2>`);
+      $('[data-status=available]').before(`<h2>${lang.tr('available_transfers')}</h2>`);
+      $('[data-status=closed]').before(`<h2>${lang.tr('closed_transfers')}</h2>`);
   }
 
   changeEmailColumnContents() {
@@ -114,7 +114,7 @@ class FabriqueTransferList {
                 otherRecipientsCount = extraInfo.find('.recipient').length - 1;
             }
             else if(currentElement.is('abbr')) {
-                emailString = lang.tr('Download link');
+                emailString = lang.tr('download_link');
             }
 
             let moreString = otherRecipientsCount ? (' + ' + otherRecipientsCount + ' ' + lang.tr('more')) : '';
@@ -267,7 +267,7 @@ class FabriqueTransferList {
             var done = function() {
                 $('[data-transfer][data-id="' + id + '"]').remove();
                 self.hideTransferDetails();
-                filesender.ui.notify("success", lang.tr('Transfer was deleted successfully!'));
+                filesender.ui.notify("success", lang.tr('ui2_transfer_deleted'));
                 filesender.ui.reload();
             };
 
@@ -307,13 +307,13 @@ class FabriqueTransferList {
 
     var id = t.attr('data-id');
     if(!id || isNaN(id)) {
-        filesender.ui.notify("error", lang.tr('Something went wrong, could not extend transfer.'));
+        filesender.ui.notify("error", lang.tr('ui2_transfer_extend_error'));
         return;
     }
 
     var duration = parseInt(t.attr('data-expiry-extension'));
     if(!duration || duration <= 0) {
-        filesender.ui.notify("error", lang.tr('This transfer cannot be extended (anymore).'));
+        filesender.ui.notify("error", lang.tr('ui2_transfer_extend_exhausted'));
         return;
     }
 
@@ -410,16 +410,16 @@ class FabriqueTransferList {
     }
 
     // Create headings
-    $('#popup_wrapper').find('.general').first().prepend(`<div class="detail_fileslist_title title-popup-details"><h2>${lang.tr('Details')}</h2></span>`);
+    $('#popup_wrapper').find('.general').first().prepend(`<div class="detail_fileslist_title title-popup-details"><h2>${lang.tr('details')}</h2></span>`);
     $('#popup_wrapper').find('.general').first().append('<div class="detail_fileslist_title title-popup-options"></span>');
 
     // Add delete button
-    var deleteTransferButton = $(`<div><span id="deleteTransfer">${lang.tr('Delete transfer')}</span></div>`);
+    var deleteTransferButton = $(`<div><span id="deleteTransfer">${lang.tr('delete_transfer')}</span></div>`);
     $('#popup_wrapper').find('.general').first().append(deleteTransferButton);
     deleteTransferButton.on('click', function(e) { self.deleteTransfer(transferId, data) });
 
     // Add extend button
-    var extendTransferButton = $(`<div><span id="extendTransfer">${lang.tr('Extend transfer')}</span></div>`);
+    var extendTransferButton = $(`<div><span id="extendTransfer">${lang.tr('extend_transfer')}</span></div>`);
     $('#popup_wrapper').find('.general').first().append(extendTransferButton);
     extendTransferButton.on('click', function(e) { self.extendTransfer(transferId, data) });
 
@@ -444,7 +444,7 @@ class FabriqueTransferList {
                 filesender.client.deleteFile(id, function() {
                     file.remove();
                     if(!current.find('.files .file').length) {
-                        filesender.ui.notify("success", lang.tr('All files were removed, so transfer was deleted as well.'));
+                        filesender.ui.notify("success", lang.tr('ui2_all_files_deleted'));
                         self.hideTransferDetails();
                         filesender.ui.reload();
                     }
@@ -488,7 +488,7 @@ class FabriqueTransferList {
                         transfer.prev('.transfer').remove();
                         transfer.remove();
                         self.hideTransferDetails();
-                        filesender.ui.notify("success", lang.tr('All recipients were removed, so transfer was deleted as well.'));
+                        filesender.ui.notify("success", lang.tr('ui2_all_recipients_deleted'));
                         filesender.ui.reload();
                     }
                     filesender.ui.notify('success', lang.tr('recipient_deleted'));
@@ -514,10 +514,10 @@ class FabriqueTransferList {
       if (!transferListActive.length) return;
 
       if (transferListActive.html().toString().includes('No more records')) {
-        transferListActive.html(`<span id="nav_no_more" class="nav_option">${lang.tr('No more active transfers')}</span>`);
+        transferListActive.html(`<span id="nav_no_more" class="nav_option">${lang.tr('ui2_no_active_transfers')}</span>`);
       }
       else {
-        transferListActive.html(`<span id="nav_active_show_more" class="nav_option">${lang.tr('Show more')}</span> <span id="nav_active_show_all" class="nav_option">${lang.tr('Show all')}</span>`)
+        transferListActive.html(`<span id="nav_active_show_more" class="nav_option">${lang.tr('ui2_show_more')}</span> <span id="nav_active_show_all" class="nav_option">${lang.tr('ui2_show_all')}</span>`)
       }
 
       // Set onclick
@@ -535,7 +535,7 @@ class FabriqueTransferList {
 
       if (!transferListInactive.length) return;
       if (transferListInactive.html().toString().includes('No more records')) {
-        transferListInactive.html(`<span id="nav_no_more" class="nav_option">${lang.tr('No more inactive transfers')}</span>`);
+        transferListInactive.html(`<span id="nav_no_more" class="nav_option">${lang.tr('ui2_no_inactive_transfers')}</span>`);
       }
       else {
         transferListInactive.html(`<span id="nav_inactive_show_more" class="nav_option">${lang.tr('Show more')}</span> <span id="nav_inactive_show_all" class="nav_option">${lang.tr('Show all')}</span>`);

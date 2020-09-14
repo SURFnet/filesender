@@ -62,7 +62,7 @@ class FabriqueGuestPage {
     // Change text
     $('label[for="add_me_to_recipients"]').text(lang.tr("Always include me in the transfer's recipients"));
     $('label[for="get_a_link"]').text(lang.tr('Have guest receive a transfer link'));
-    $('#get_a_link').parent().parent().append(`<div id="base_notifications"> <div class="subtitle">${lang.tr('Notifications')}</div> </div>`);
+    $('#get_a_link').parent().parent().append(`<div id="base_notifications"> <div class="subtitle">${lang.tr('ui2_notifications')}</div> </div>`);
 
     // Move checkboxes for notifications
     $('#base_notifications').append($('#email_upload_complete').parent().detach());
@@ -70,10 +70,10 @@ class FabriqueGuestPage {
 
     // Move get a link cb
     $('.guest_options:eq(1)').prepend($('#get_a_link').parent().detach());
-    $('.guest_options').prepend(`<div class="subtitle">${lang.tr('Options')}</div>`);
+    $('.guest_options').prepend(`<div class="subtitle">${lang.tr('options')}</div>`);
 
     // Add title
-    $('.box').first().prepend(`<div class="title">${lang.tr('Invite someone to send you a file')}</div>`);
+    $('.box').first().prepend(`<div class="title">${lang.tr('ui2_invite_guest')}</div>`);
 
   }
 
@@ -431,7 +431,7 @@ $(function() {
       if($(this).filter('[aria-disabled="false"]')) {
           filesender.ui.send();
           filesender.ui.nodes.sendbutton.button('disable');
-          filesender.ui.notify("success", lang.tr('Guest voucher sent'));
+          filesender.ui.notify("success", lang.tr('guest_vouchers_sent'));
       }
       return false;
   }).button({disabled: true});

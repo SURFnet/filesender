@@ -555,3 +555,4 @@ $lang['ui2_no_active_transfers'] = 'Geen actieve transfers meer';
 $lang['ui2_no_inactive_transfers'] = 'Geen inactieve transfers meer';
 $lang['ui2_show_more'] = 'Meer';
 $lang['ui2_show_all'] = 'Alles';
+$lang['ui2_continue'] = 'Doorgaan';

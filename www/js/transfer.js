@@ -109,7 +109,7 @@ class Fabrique {
 
     // Add continue button to step 2
     this.continueButton = $('<button id="continue" type="button"/>').addClass('ui-state-disabled');
-    $(this.continueButton).text(lang.tr('continue'));
+    $(this.continueButton).text(lang.tr('ui2_continue'));
     this.encryptionArea.parent().append(this.continueButton);
 
     // Move the start upload buttons into the right div

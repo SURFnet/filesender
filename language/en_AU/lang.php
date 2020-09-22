@@ -573,4 +573,4 @@ $lang['ui2_no_active_transfers'] = 'No active transfers anymore';
 $lang['ui2_no_inactive_transfers'] = 'No inactive transfers anymore';
 $lang['ui2_show_more'] = 'Show more';
 $lang['ui2_show_all'] = 'Show all';
-
+$lang['ui2_continue'] = 'Continue';

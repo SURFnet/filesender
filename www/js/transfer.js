@@ -130,8 +130,8 @@ class Fabrique {
     this.filesListBack = $(`
                             <div id="filesList" class="step2">
                                 <div class="infoDiv fileCountDiv"><span id="fileCount"></span> ${lang.tr('ui2_files_added')} </div>
-                                <div class=infoDiv fileSizeDiv">${lang.tr('ui2_total_size')} <span id="fileSize"></span> / <span id="maxFileSize"></span></div>
-                                <div class=infoDiv encryptDiv"><span>${lang.tr('ui2_encryption_status')} </span> <span id="encryptionStatus"></span></div>
+                                <div class="infoDiv fileSizeDiv">${lang.tr('ui2_total_size')} <span id="fileSize"></span> / <span id="maxFileSize"></span></div>
+                                <div class="infoDiv encryptDiv"><span>${lang.tr('ui2_encryption_status')} </span> <span id="encryptionStatus"></span></div>
                             </div>
     `).hide();
     this.overallDiv.prepend(this.filesListBack);
@@ -142,7 +142,7 @@ class Fabrique {
         <div id="fileDetails" class="step1">
             <div>
                 <div class="fileCountDiv"><span id="fileCount"></span><span> file(s) added</span></div>
-                <div class="fileSizeDiv">${lang.tr('Total size')} <span id="fileSize"></span> / <span id="maxFileSize"></span></div>
+                <div class="fileSizeDiv">${lang.tr('ui2_total_size')} <span id="fileSize"></span> / <span id="maxFileSize"></span></div>
             </div>
         </div>
     `).hide();

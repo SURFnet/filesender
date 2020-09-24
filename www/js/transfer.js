@@ -60,7 +60,7 @@ class Fabrique {
     this.splitOnColon();
 
     this.termsLink = $('.terms').children().first().detach();
-    this.termsLink.html('Code of Conduct');
+    this.termsLink.html(lang.tr('ui2_coc'));
 
     this.termsLabel = $('label[for="aup"]').html(`${lang.tr('ui2_accept_aup_1')} ${$(this.termsLink)[0].outerHTML} ${lang.tr('ui2_accept_aup_2')}`);
     this.termsLabel.attr('title', '');
@@ -70,7 +70,7 @@ class Fabrique {
     this.encryptionArea.append('<span id="tooltip_encrypt_toggle">[i]</span>');
     this.encryptionDescription = $('#tooltip_encrypt_toggle');
     this.encryptionToggled = false;
-    this.showPasswordCheckbox = $('label[for="encryption_show_password"]').text(lang.tr('show_password'));
+    this.showPasswordCheckbox = $('label[for="encryption_show_password"]').text(lang.tr('file_encryption_show_password'));
     this.encryptionDescriptionContainer = $('#encryption_description_container').hide();
     this.encryptionDescriptionContainer.html(this.encryptionDescriptionContainer.html().replace(new RegExp("&nbsp;","gm"), ''));
 

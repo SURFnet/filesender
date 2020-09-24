@@ -60,7 +60,7 @@ class FabriqueGuestPage {
     $('#notifications').hide();
 
     // Change text
-    $('label[for="add_me_to_recipients"]').text(lang.tr("Always include me in the transfer's recipients"));
+    $('label[for="add_me_to_recipients"]').text(lang.tr('ui2_include_me'));
     $('label[for="get_a_link"]').text(lang.tr('Have guest receive a transfer link'));
     $('#get_a_link').parent().parent().append(`<div id="base_notifications"> <div class="subtitle">${lang.tr('ui2_notifications')}</div> </div>`);
 

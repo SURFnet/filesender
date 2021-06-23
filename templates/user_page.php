@@ -177,9 +177,7 @@ EOT;
     
     ?>
     
-    <!-- <h2>Python CLI Client</h2>
-    <a href="clidownload.php" target="_blank">{tr:download} Python CLI Client</a> -->
-  
+
     <h2>{tr:actions}</h2>
 
         {tr:user_profile_send_client_logs_description_text}
@@ -202,6 +200,20 @@ EOT;
         <a href="#">
             <span class="fa fa-lg fa-times"></span>
             {tr:clear_client_logs}
+        </a>
+    </div>
+    <br/>
+
+    <div class="clear_frequent_recipients">
+        <a href="#">
+            <span class="fa fa-lg fa-times"></span>
+            {tr:clear_frequent_recipients}
+        </a>
+    </div>
+    <div class="clear_user_transfer_preferences">
+        <a href="#">
+            <span class="fa fa-lg fa-times"></span>
+            {tr:clear_user_transfer_preferences}
         </a>
     </div>
     <br/>

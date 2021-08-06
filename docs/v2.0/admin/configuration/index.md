@@ -27,6 +27,7 @@ A note about colours;
 * [site_logouturl](#site_logouturl)
 * [reports_show_ip_addr](#reports_show_ip_addr)
 * [admin_can_view_user_transfers_page](#admin_can_view_user_transfers_page)
+* [mime_type_regex](#mime_type_regex)
 
 ## Security settings
 * [header_x_frame_options](#header_x_frame_options)

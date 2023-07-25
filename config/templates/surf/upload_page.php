@@ -4,6 +4,7 @@ $guest_can_only_send_to_creator = false;
 $encryption_mandatory = Principal::isEncryptionMandatory();
 $encryption_checkbox_checked = '';
 $encryption_checkbox_classes = '';
+$expire_time_is_editable = true;
 
 $files_actions_div_extra_class = "div3";
 $upload_directory_button_enabled = false;
@@ -58,6 +59,15 @@ if( $encryption_mandatory ) {
     $encryption_checkbox_checked = ' checked="checked"  disabled="disabled" ';
     $encryption_checkbox_classes = '';
 }
+
+if(Auth::isGuest()) {
+    $guest = AuthGuest::getGuest();
+    if( $guest->guest_upload_expire_read_only ) {
+        $expire_time_is_editable = false;
+    }
+}
+
+
 
 ?>
 
@@ -114,7 +124,7 @@ if( $encryption_mandatory ) {
                 <?php if ($upload_directory_button_enabled) { ?>
                 <div class="<?php echo $files_actions_div_extra_class ?>">
                     <input type="file" name="selectdir" id="selectdir" class="selectdir_hidden_input_element" webkitdirectory directory multiple mozdirectory />
-                    <label for="selectdir" class="select_directory  ">{tr:select_directory}</label>                    
+                    <label for="selectdir" class="select_directory  ">{tr:select_directory}</label>
                 </div>
                 <?php } ?>
                 
@@ -144,6 +154,7 @@ if( $encryption_mandatory ) {
                 <div class="stats">
                     <div class="uploaded">{tr:uploaded} : <span class="value"></span></div>
                     <div class="average_speed">{tr:average_speed} : <span class="value"></span></div>
+                    <div class="estimated_completion">{tr:estimated_completion} : <span class="value"></span></div>
                 </div>
             </div>
             
@@ -224,7 +235,7 @@ if( $encryption_mandatory ) {
                         </div>
                         
                         <div class="fieldcontainer" id="encryption_password_container_generate">
-                            <input id="encryption_use_generated_password"  name="encryption_use_generated_password" type="checkbox">  
+                            <input id="encryption_use_generated_password"  name="encryption_use_generated_password" type="checkbox" >  
                             <label for="encryption_use_generated_password" class="cursor" >{tr:file_encryption_generate_password}</label>
                             
                         </div>
@@ -297,6 +308,8 @@ if( $encryption_mandatory ) {
                             
                             if($name == TransferOptions::ENABLE_RECIPIENT_EMAIL_DOWNLOAD_COMPLETE)
                                 echo '<div class="info message">'.Lang::tr('enable_recipient_email_download_complete_warning').'</div>';
+                            if($name == TransferOptions::WEB_NOTIFICATION_WHEN_UPLOAD_IS_COMPLETE && Browser::instance()->isFirefox)
+                                echo '<div class="info message"><a class="enable_web_notifications" href="#">'.Lang::tr('click_to_enable_web_notifications').'</a></div>';
                             
                             echo '</div>';
                         };
@@ -306,7 +319,7 @@ if( $encryption_mandatory ) {
                         <div class="fieldcontainer">
                             <label for="expires" id="datepicker_label" class="mandatory">{tr:expiry_date}:</label>
                             
-                            <input id="expires" name="expires" type="text" autocomplete="off"
+                            <input id="expires" name="expires" type="text" autocomplete="off" <?php if(!$expire_time_is_editable) echo " disabled "  ?>
                                    title="<?php echo Lang::trWithConfigOverride('dp_date_format_hint')->r(array('max' => Config::get('max_transfer_days_valid'))) ?>"
                                    data-epoch="<?php echo Transfer::getDefaultExpire() ?>"
                             />

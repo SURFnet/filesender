@@ -243,13 +243,13 @@ class StorageCloudS3 extends StorageFilesystem
 
 		// Create batches of requested batchsize
                 $chunked_queue = array_chunk($delete_queue, $bulk_size);
-                Logger::debug('bulk deleteFile has ' . count($chunked_queue) . ' chunks');
+                Logger::debug('bulk deleteFile has ' . count($chunked_queue) . ' requests');
 
 
                 // Perform actual chunk removal
                 foreach($chunked_queue as $delete_batch) {
 
-                    Logger::debug('bulk deleteFile deleting ' . count($batch) . 'chunks');
+                    Logger::debug('bulk deleteFile deleting ' . count($delete_batch) . ' chunks');
                     $result = $client->deleteObjects([
                        'Bucket' => $bucket_name,
                        'Delete' => [

@@ -146,7 +146,9 @@ if( $verbose ) echo "cron.php Delete expired audit logs and related data...\n";
 foreach(Transfer::allExpiredAuditlogs() as $transfer) {
     Logger::info($transfer.' auditlogs expired, deleting them and deleting transfer data');
     AuditLog::clean($transfer);
-    $transfer->deleteForce = $force;
+    // $transfer->deleteForce = $force;
+    // Temp force logs expiry while S3 has some issues
+    $transfer->deleteForce = true;
     $transfer->delete();
 }
 

@@ -1,0 +1,8 @@
+--- config/language/en_AU/site_footer.html.php
++++ config/language/en_AU/site_footer.html.php
+@@ -7,4 +7,4 @@
+ // 
+ // 
+ ?>
+-<p>Problems? Contact your local helpdesk.</p>
++<p>Do you have a question? Check our FAQ (<a target="_blank" rel="noopener noreferrer" href="https://wiki.surfnet.nl/x/7Air">https://wiki.surfnet.nl/x/7Air</a>) or contact the helpdesk of your institution.</p>

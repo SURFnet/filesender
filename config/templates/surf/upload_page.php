@@ -77,7 +77,7 @@ if(Auth::isGuest()) {
             <div class="files" id="fileslist"></div>
             
             <div class="file_selector">
-                <label for="files" class="mandatory">{tr:select_file} :</label>
+                <label for="files" class="mandatory">{tr:select_file}:</label>
                 
                 <input id="files" name="files" type="file" multiple />
                 
@@ -129,8 +129,8 @@ if(Auth::isGuest()) {
                 <?php } ?>
                 
                 <div class="stats <?php echo $files_actions_div_extra_class ?>">
-                    <div class="number_of_files">{tr:number_of_files} : <span class="value"></span></div>
-                    <div class="size">{tr:size} : <span class="value"></span></div>
+                    <div class="number_of_files">{tr:number_of_files}: <span class="value"></span></div>
+                    <div class="size">{tr:size}: <span class="value"></span></div>
                 </div>
             </div>
 
@@ -152,9 +152,9 @@ if(Auth::isGuest()) {
                     </table>
                 </div>
                 <div class="stats">
-                    <div class="uploaded">{tr:uploaded} : <span class="value"></span></div>
-                    <div class="average_speed">{tr:average_speed} : <span class="value"></span></div>
-                    <div class="estimated_completion">{tr:estimated_completion} : <span class="value"></span></div>
+                    <div class="uploaded">{tr:uploaded}: <span class="value"></span></div>
+                    <div class="average_speed">{tr:average_speed}: <span class="value"></span></div>
+                    <div class="estimated_completion">{tr:estimated_completion}: <span class="value"></span></div>
                 </div>
             </div>
             
@@ -166,7 +166,7 @@ if(Auth::isGuest()) {
                     <div class="fieldcontainer">
                         <?php $emails = Auth::isGuest() ? array(AuthGuest::getGuest()->email) : Auth::user()->email_addresses ?>
                         
-                        <label for="from" class="mandatory">{tr:from} :</label>
+                        <label for="from" class="mandatory">{tr:from}:</label>
                         
                         <?php if (count($emails) > 1) { ?>
                         
@@ -181,7 +181,7 @@ if(Auth::isGuest()) {
                     
                     <?php if($allow_recipients) { ?>
                     <div class="fieldcontainer" data-related-to="message">
-                        <label for="to" class="mandatory">{tr:to} :</label>
+                        <label for="to" class="mandatory">{tr:to}:</label>
                         
                         <?php if(Auth::isGuest() && AuthGuest::getGuest()->getOption(GuestOptions::CAN_ONLY_SEND_TO_ME)) { ?>
                         <?php echo AuthGuest::getGuest()->user_email ?>
@@ -199,7 +199,7 @@ if(Auth::isGuest()) {
                     </div>
                     
                     <div class="fieldcontainer" data-related-to="message">
-                        <label for="message">{tr:message} ({tr:optional}) : </label>
+                        <label for="message">{tr:message} ({tr:optional}): </label>
                         <label class="invalid" id="message_can_not_contain_urls">{tr:message_can_not_contain_urls}</label>                        
                         <label class="invalid" id="password_can_not_be_part_of_message_warning">
                             {tr:password_can_not_be_part_of_message_warning}</label>                        
@@ -215,7 +215,7 @@ if(Auth::isGuest()) {
                             <label for="encryption" class="cursor" >{tr:file_encryption}</label>
                         </div>
                         <div class="fieldcontainer" id="encryption_password_container">  
-                            <label for="encryption_password" class="cursor" >{tr:file_encryption_password} : </label>
+                            <label for="encryption_password" class="cursor" >{tr:file_encryption_password}: </label>
                             <input class="encryption_password" id="encryption_password" name="encryption_password" type="password" autocomplete="new-password" readonly />
                         </div>
                         <div class="fieldcontainer passwordvalidation" id="encryption_password_container_too_short_message">

@@ -235,7 +235,7 @@ filesender.ui.files = {
     addFile: function(filepath, fileblob, source_node) {
         var filesize = fileblob.size;
         var node = null;
-            var info = filepath + ' : ' + filesender.ui.formatBytes(filesize);
+            var info = filepath + ': ' + filesender.ui.formatBytes(filesize);
             node = $('<div class="file" />').attr({
                 'data-name': filepath,
                 'data-size': filesize

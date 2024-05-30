@@ -246,3 +246,12 @@ if (Utilities::startsWith(strtolower(Config::get('storage_type')), 'clouds3') &&
 // If we are configured to send aggregate (anonymous) statistics
 // to a central server then we should check if it is time to do that.
 AggregateStatistic::maybeSendReport();
+
+// Expire sessions
+// This is done in cron, so we don't bother endusers with it
+
+Logger::info('Session expiry started');
+session_start();
+$num_sessions = session_gc();
+session_destroy();
+Logger::info('Session expiry ended. '.$num_sessions.' sessions removed');

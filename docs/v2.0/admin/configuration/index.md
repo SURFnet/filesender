@@ -894,7 +894,6 @@ deleting up to [cloud_s3_bulk_size](#cloud_s3_bulk_size) chunks per request.
 * __comment:__ When [cloud_s3_bulk_delete](#cloud_s3_bulk_delete) is true, this is the maximum size of the delete request.
 Default value to maintain AWS S3 compatibility is 1000. Other storage platforms may use different defaults. OpenStack Swift defaults to 10000, for instance
 
-
 ---
 
 ## Shredding

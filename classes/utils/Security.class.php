@@ -109,7 +109,7 @@ class Security
         }
 
         if (Auth::isGuest()) {
-            $checkToken = true;
+            $checkToken = false;
         }
         
         if( $checkToken ) {

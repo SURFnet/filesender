@@ -78,6 +78,8 @@ if( $testingMode ) {
 
 
 
+
+
 if( $verbose ) {
     echo "cron.php starting up... --force:$force --testing-mode:$testingMode\n";
     echo "cron.php running as user: " . `id` . "\n";
@@ -111,6 +113,9 @@ foreach(Transfer::allExpired() as $transfer) {
 if( $verbose ) echo "cron.php delete failed transfers...\n";
 foreach(Transfer::allFailed() as $transfer) {
     Logger::info($transfer.' failed, deleting it');
+    if( $force ) {
+        $transfer->deleteForce = true;
+    }
     $transfer->delete();
 }
 
@@ -250,6 +255,8 @@ if (Utilities::startsWith(strtolower(Config::get('storage_type')), 'clouds3') &&
 if( Config::get("download_verification_code_enabled")) {
     DownloadOneTimePassword::cleanup();
 }
+
+StorageFilesystem::deleteEmptyBucketDirectories();
 
 // If we are configured to send aggregate (anonymous) statistics
 // to a central server then we should check if it is time to do that.

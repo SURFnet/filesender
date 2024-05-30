@@ -67,6 +67,11 @@ A note about colours;
 * [storage_filesystem_tree_deletion_command](#storage_filesystem_tree_deletion_command)
 * [storage_usage_warning](#storage_usage_warning)
 * [storage_filesystem_hashing](#storage_filesystem_hashing)
+* [storage_filesystem_per_day_buckets](#storage_filesystem_per_day_buckets)
+* [storage_filesystem_per_hour_buckets](#storage_filesystem_per_hour_buckets)
+* [storage_filesystem_per_day_max_age_to_create_directory](#storage_filesystem_per_day_min_age_to_create_directory)
+* [storage_filesystem_per_day_min_days_to_clean_empty_directories](#storage_filesystem_per_day_min_days_to_clean_empty_directories)
+* [storage_filesystem_per_day_max_days_to_clean_empty_directories](#storage_filesystem_per_day_max_days_to_clean_empty_directories)
 * [storage_filesystem_ignore_disk_full_check](#storage_filesystem_ignore_disk_full_check)
 * [storage_filesystem_external_script](#storage_filesystem_external_script)
 * [cloud_s3_region](#cloud_s3_region)
@@ -144,6 +149,7 @@ A note about colours;
 * [can_view_aggregate_statistics](#can_view_aggregate_statistics)
 * [auth_sp_saml_can_view_statistics_entitlement](#auth_sp_saml_can_view_statistics_entitlement)
 * [auth_sp_saml_can_view_aggregate_statistics_entitlement](#auth_sp_saml_can_view_aggregate_statistics_entitlement)
+* [read_only_mode](#read_only_mode)
 
 
 
@@ -197,6 +203,7 @@ A note about colours;
 * [recipient_reminder_limit](#recipient_reminder_limit)
 * [log_authenticated_user_download_by_ensure_user_as_recipient](#log_authenticated_user_download_by_ensure_user_as_recipient)
 * [transfer_automatic_reminder](#transfer_automatic_reminder)
+* [transfers_table_show_admin_full_path_to_each_file](#transfers_table_show_admin_full_path_to_each_file)
 
 ## Graphs
 
@@ -282,6 +289,7 @@ A note about colours;
 * [logs_limit_messages_from_same_ip_address](#logs_limit_messages_from_same_ip_address)
 * [trackingevents_lifetime](#trackingevents_lifetime)
 * [client_ip_key](#client_ip_key)
+* [exception_skip_logging](#exception_skip_logging)
 
 ## Webservices API
 
@@ -871,6 +879,60 @@ $config['valid_filename_regex'] = '^['."\u{2010}-\u{2027}\u{2030}-\u{205F}\u{207
 * __comment:__ basically integer. use fileUID (which is used to create name on hard drive) + as many characters as the hashing value (if you set hashing to 2 you take the 2 first letters of the fileUID (big random string) and use these two characters to create a directory structure under the storage path. This avoids having all files in the same directory. If you set this to 1 you have 16 possible different values for the directory structure under the storage root. You'll have 16 folders under your storage root under which you'll have the files. This allows you to spread files over different file systems / hard drives. You can aggregate storage space without using things like LVM. If you set this to two you have 2 levels of subdirectories. For directory naming: first level, directory names has one letter. Second level has two: letter from upper level + own level. Temporary chunks are stored directly in the final file. No temp folder (!!) Benchmarking between writing small file in potentially huge directory and opening big file and seeking in it was negligible. Can just open final file, seek to location of chunk offset and write data. Removes need to move file in the end.  It can also be "callable". We call the function giving it the file object which hold all properties of the file. Reference to the transfer as well. The function has to return a path under the storage root. This is a path related to storage root. For example: if you want to store small files in a small file directory and big files in big directory. F.ex. if file->size < 100 MB store on fast small disk, if > 100 MB store on big slow disk. Can also be used for functions to store new files on new storage while the existing files remain on existing storage. Note: we need contributions for useful functions here :)
 
 
+### storage_filesystem_per_day_buckets
+
+* __description:__ Store files in a subdirectory based on the day they were created.
+* __mandatory:__ no
+* __type:__ **bool** 
+* __default:__ false
+* __available:__ since version 2.45
+* __comment:__ This requires version 7 UUIDs to be in use. The timestamp from the v7 uuid is taken and the seconds since midnight are removed and that is used to create a subdirectory for the stored files. See also storage_filesystem_per_hour_buckets. Note that this works with storage_filesystem_per_hour_buckets, if both are enabled then first a daily directory is made and then an hourly directory is created in the day directory and the files are stored in the hourly subdirectory. This will allow the number of entries in a directory to be controlled by a system administrator and the use of v7 uuid will also permit the kernel filesystem to better index entry lookup.
+
+
+
+### storage_filesystem_per_hour_buckets
+
+* __description:__ Store files in a subdirectory based on the hour they were created.
+* __mandatory:__ no
+* __type:__ **bool** 
+* __default:__ false
+* __available:__ since version 2.45
+* __comment:__ This requires version 7 UUIDs to be in use. The timestamp from the v7 uuid is taken and the seconds since the start of the hour are removed and that is used to create a subdirectory for the stored files. See also storage_filesystem_per_day_buckets for an overview of this feature.
+
+### storage_filesystem_per_day_max_age_to_create_directory
+
+* __description:__ Mostly internal use. Bucket directories are created automatically. This is the maximum number of days ago to create these subdirectory buckets.
+* __mandatory:__ no
+* __type:__ int
+* __default:__ 7
+* __available:__ since version 2.47
+* __comment:__ This is mostly for internal use and likely fine to leave at default. This prevents bucket subdirectories from being recreated if very old files are listed where the file content is already deleted by the cron job.
+
+### storage_filesystem_per_day_min_days_to_clean_empty_directories
+
+* __description:__ Mostly internal use. How many days ago the cron job starts to consider when looking for empty bucket directories to delete
+* __mandatory:__ no
+* __type:__ int
+* __default:__ -1 which means this is set to max_transfer_days_valid
+* __available:__ since version 2.47
+* __comment:__ This is mostly for internal use and likely fine to leave at default. 
+
+
+### storage_filesystem_per_day_max_days_to_clean_empty_directories
+
+* __description:__ Mostly internal use. How far back from storage_filesystem_per_day_min_days_to_clean_empty_directories to consider when trying to delete empty bucket directories
+* __mandatory:__ no
+* __type:__ int
+* __default:__ 150
+* __available:__ since version 2.47
+* __comment:__ This is mostly for internal use and likely fine to leave at default. 
+
+
+
+
+
+
+
 ### storage_filesystem_ignore_disk_full_check
 
 * __description:__ Ignore tests to see if new files will fit onto the filesystem.
@@ -999,6 +1061,7 @@ deleting up to [cloud_s3_bulk_size](#cloud_s3_bulk_size) chunks per request.
 * __available:__ since version 2.45
 * __comment:__ When [cloud_s3_bulk_delete](#cloud_s3_bulk_delete) is true, this is the maximum size of the delete request.
 Default value to maintain AWS S3 compatibility is 1000. Other storage platforms may use different defaults. OpenStack Swift defaults to 10000, for instance
+
 
 ---
 
@@ -1524,6 +1587,17 @@ User language detection is done in the following order:
 * __default:__ ""
 * __available:__ since version 2.8
 * __comment:__ See also can_view_statistics
+
+
+### read_only_mode
+* __description:__  Do not allow new transfers and guests to be created.
+* __mandatory:__ no
+* __type:__ boolean
+* __default:__ false
+* __available:__ since version 2.48
+* __comment:__ If you are performing a major upgrade you might like to retain an original FileSender installation in read only mode so users can continue to download existing files and redirect visitors to a new site for new uploads. This may be useful for upgrading between major FileSender releases such as the 2.x series to the 3.x series and also for change in infrastructure such as moving to different disk pools or storage back ends.
+
+
 
 
 ---
@@ -2191,6 +2265,23 @@ This is only for old, existing transfers which have no roundtriptoken set.
 * __*Configuration example:*__
    $config['transfer_automatic_reminder'] = 7;
    $config['transfer_automatic_reminder'] = array(7,10);
+
+
+
+### transfers_table_show_admin_full_path_to_each_file
+
+* __description:__ In the transfers table show the local path for the data for each file
+* __mandatory:__ no
+* __type:__ bool
+* __default:__ false
+* __available:__ since before version 2.46
+* __comment:__ A debugging option to allow an admin to see where the file content is stored for each
+               file in every transfer. This allows direct inspection of the disk without having to
+               work out the transfer id and uuid for a file in the case that an admin wishes to inspect 
+               the disk. This can be useful when storage_filesystem_per_day_buckets is enabled as there
+               will be subdirectories that are calculated from the timestamp in the uuid which may not
+               be immediately obvious to a human.
+
 
 
 
@@ -3037,6 +3128,20 @@ $config['log_facilities'] =
 * __default__: REMOTE_ADDR
 * __available:__ v2.2
 * __comment:__ Client identifier. Usually the default is fine, however when you have reverse proxy setups, you may need to change this to HTTP_CLIENT_IP, HTTP_X_REAL_IP, HTTP_X_FORWARDED_FOR, depending on your setup.
+
+
+### exception_skip_logging
+
+* __description:__ An array of exception class names to ignore during logging
+* __mandatory:__ no
+* __type:__ array of string
+* __default__: 
+* __available:__ v2.48
+* __comment:__ A list of php exception class names to not trigger logging messages. For example:
+	<pre><code>
+      $config['exception_skip_logging'] = array('AuthRemoteSignatureCheckFailedException');
+    </code></pre>
+
 
 
 ### logs_limit_messages_from_same_ip_address

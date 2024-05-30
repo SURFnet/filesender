@@ -165,8 +165,9 @@ class Config
         }
 
         // Load config regex overrides if used and present
+        // if not authenticated then do not throw, just do not load these files
         $auth_config_regex_files = self::get('auth_config_regex_files');
-        if( !empty($auth_config_regex_files) && is_array($auth_config_regex_files) && Auth::isAuthenticated()) {
+        if( !empty($auth_config_regex_files) && is_array($auth_config_regex_files) && Auth::isAuthenticated(false)) {
                 $auth_attrs = Auth::attributes();
                 foreach ($auth_config_regex_files as $attr=>$regex_and_configs) {
                         if (!is_array($regex_and_configs)) {
@@ -376,6 +377,19 @@ class Config
         }
 
         self::$parameters['download_verification_code_valid_duration_minutes'] = floor(self::$parameters['download_verification_code_valid_duration'] / 60);
+
+        $k = 'storage_filesystem_per_day_min_days_to_clean_empty_directories';
+        if( -1 == self::$parameters[$k] ) {
+            self::$parameters[$k] = self::$parameters['max_transfer_days_valid'];
+            $kmax = 'storage_filesystem_per_day_max_days_to_clean_empty_directories';
+            if( self::$parameters[$kmax] < self::$parameters[$k] ) {
+                self::$parameters[$kmax] = self::$parameters[$k] + 30;
+            }
+        }
+
+        if( Config::get("storage_filesystem_per_day_max_days_to_clean_empty_directories") < Config::get("storage_filesystem_per_day_min_days_to_clean_empty_directories")) {
+            throw new ConfigBadParameterException("storage_filesystem_per_day_max_days_to_clean_empty_directories must be larger than storage_filesystem_per_day_min_days_to_clean_empty_directories");
+        }
         
         // verify classes are happy
         Guest::validateConfig();
@@ -489,7 +503,7 @@ class Config
             foreach (array_keys(self::$parameters) as $key) {
                 if (substr($key, 0, strlen($search)) == $search) {
                     $args[0] = $key;
-                    $set[substr($key, strlen($search))] = call_user_func_array(get_class().'::get', $args);
+                    $set[substr($key, strlen($search))] = call_user_func_array(static::class.'::get', $args);
                 }
             }
             return $set;
@@ -549,7 +563,7 @@ class Config
      */
     public static function getBaseValue($key)
     {
-        $value = call_user_func_array(get_class().'::get', func_get_args());
+        $value = call_user_func_array(static::class.'::get', func_get_args());
         
         if (
             is_array(self::$override) &&

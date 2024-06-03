@@ -17,4 +17,4 @@ $lang['crypto_pbkdf2_dialog_with_expected'] = '{cfg:site_name} genereert een sle
 $lang['terms_accepted'] = 'Voorwaarden geaccepteerd';
 $lang['guest_expired'] = 'Voucher voor gastgebruik verlopen.';
 $lang['user_lang'] = 'Taal';
-$lang['python_cli_client'] = 'Python CLI Client';
+$lang['python_cli_client_heading'] = 'Python CLI Client';

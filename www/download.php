@@ -71,7 +71,14 @@ try {
         // Getting associated transfer 
         $transfer = $recipient->transfer;
 
-
+        // $recipient
+        if( Utilities::isTrue(Config::get('download_verification_code_enabled'))) {
+            $otp = DownloadOneTimePassword::mostRecentForDownload( $transfer, $recipient );
+            if( !$otp->verified) {
+                throw new RestDataStaleException('transfer = '.$transfer->id);
+            }
+        }
+    
         if( Config::get('log_authenticated_user_download_by_ensure_user_as_recipient')) {
             if( Auth::isRegularUser()) {
                 $user = Auth::user();
@@ -125,6 +132,17 @@ try {
     // Close session to avoid simultaneous requests from being locked
     session_write_close();
     
+    // Ensure transaction id
+    $transaction_id = '';
+    if(array_key_exists('transaction_id', $_REQUEST))
+        $transaction_id = $_REQUEST['transaction_id'];
+
+    if(!$transaction_id || !Utilities::isValidUID($transaction_id)) {
+        $transaction_id = Utilities::generateUID();
+        header('Location: '.Utilities::http_build_query(array_merge($_REQUEST, ['transaction_id' => $transaction_id]), 'download.php?'));
+        exit;
+    }
+
     $recently_downloaded = false;
     // Check if file set has already been downloaded over the last hour
     if( Config::get('logs_limit_messages_from_same_ip_address')) {

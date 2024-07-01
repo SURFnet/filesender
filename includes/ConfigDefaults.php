@@ -167,11 +167,18 @@ $default = array(
     'storage_filesystem_external_script' => FILESENDER_BASE.'/scripts/StorageFilesystemExternal/external.py',
 
     'storage_filesystem_shred_path' => FILESENDER_BASE.'/shredfiles',
+    'storage_filesystem_per_day_buckets' => false,
+    'storage_filesystem_per_hour_buckets' => false,
+    'storage_filesystem_per_day_max_age_to_create_directory' => 7,
+    'storage_filesystem_per_day_min_days_to_clean_empty_directories' => -1,
+    'storage_filesystem_per_day_max_days_to_clean_empty_directories' => 150,
+    'transfers_table_show_admin_full_path_to_each_file' => false,
     
     'email_from' => 'sender',
     'email_return_path' => 'sender',
     'email_subject_prefix' => '{cfg:site_name}:',
     'email_headers' => false,
+    'email_send_with_minus_r_option' => true,
     
     'report_bounces' => 'asap',
     'report_bounces_asap_then_daily_range' => 15 * 60,
@@ -181,6 +188,7 @@ $default = array(
     'statlog_lifetime' => 0,
     'statlog_log_user_organization' => false,
     'auditlog_lifetime' => 31,
+    'ratelimithistory_lifetime' => 31,
     
     'storage_usage_warning' => 20,
     
@@ -267,6 +275,7 @@ $default = array(
                                                                 , 'email_daily_statistics', 'email_report_on_closing'
                                                                 , 'enable_recipient_email_download_complete'
                                                                 , 'add_me_to_recipients', 'redirect_url_on_complete'
+                                                                , 'hide_sender_email'
     ),
 
     'header_x_frame_options' => 'sameorigin',
@@ -302,6 +311,8 @@ $default = array(
     'streamsaver_on_edge'   => true,
     'streamsaver_on_safari' => true,
 
+    'filesystemwritablefilestream_enabled' => false,
+    
     'upload_page_password_can_not_be_part_of_message_handling' => 'warning',
 
     'data_protection_user_frequent_email_address_disabled' => false,
@@ -337,6 +348,13 @@ $default = array(
                                          GUIPages::APISECRETAUP ),
     'allow_pages_add_for_admin' => array( GUIPages::ADMIN ),
     
+    'download_verification_code_enabled' => false,
+    'download_verification_code_valid_duration' => 60*15,
+    'download_verification_code_random_bytes_used' => 8,
+
+    'download_show_download_links' => false,
+
+    'read_only_mode' => false,
     
     'transfer_options' => array(
         'email_me_copies' => array(

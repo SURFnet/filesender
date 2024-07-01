@@ -71,6 +71,19 @@ if(Auth::isGuest()) {
 
 ?>
 
+
+<?php if( Config::get('read_only_mode')) { ?>
+    <div class="box">
+        {tr:read_only_mode}
+    </div>
+<?php
+    return;
+}
+?>
+
+
+
+
 <div class="box">
     <form id="upload_form" class="<?php echo $formClasses; ?>" enctype="multipart/form-data" accept-charset="utf-8" method="post" autocomplete="off" data-need-recipients="<?php echo $need_recipients ? '1' : '' ?>">
         <div class="box">
@@ -178,6 +191,74 @@ if(Auth::isGuest()) {
                         
                         <?php } else echo Template::sanitizeOutputEmail($emails[0]) ?>
                     </div>
+
+                    <?php
+                    /**
+                     * @param optionsToFilter is an array of options which we do not want to
+                     *                        show in the default panels on the left. This allows
+                     *                        some options to be displayed in other locations on the page.
+                     */
+                    $displayoption = function( $name, $cfg, $disable = false, $forcedOption = false,
+                                               $optionsToFilter = array('hide_sender_email'))
+                    use ($guest_can_only_send_to_creator)
+                    {
+                            $text = in_array($name, array(TransferOptions::REDIRECT_URL_ON_COMPLETE));
+
+                            if( in_array($name, $optionsToFilter)) {
+                                return;
+                            }
+                            
+                            $default = $cfg['default'];
+                            if( !$forcedOption ) {
+                                if(Auth::isSP() && !$text)
+                                    $default = Auth::user()->defaultTransferOptionState($name);
+                            }
+                            
+                            $checked = $default ? 'checked="checked"' : '';
+                            $disabled = $disable ? 'disabled="disabled"' : '';
+                            $extraDivAttrs = '';
+                            if(Auth::isGuest() && $disable) {
+                                if( Config::get('guest_upload_page_hide_unchangable_options')) {
+                                    $extraDivAttrs .= ' hidden="true" ';
+                                }
+                            }
+
+                            // if they are a guest and can only send to the user
+                            // who sent the guest voucher to them then don't even
+                            // show the get a link option.
+                            if(Auth::isGuest() && $name == 'get_a_link') {
+                                if($name == 'get_a_link' && $guest_can_only_send_to_creator ) {
+                                    return;
+                                }
+                            }
+                            
+                            echo '<div class="fieldcontainer" data-option="'.$name.'" '. $extraDivAttrs .'>';
+                            if($text) {
+                                echo '    <label for="'.$name.'">'.Lang::tr($name).'</label>';
+                                echo '    <input id="'.$name.'" name="'.$name.'" type="text" value="'.htmlspecialchars($default).'" '.$disabled.'>';
+                                
+                            } else {
+                                echo '  <input id="'.$name.'" name="'.$name.'" type="checkbox" '.$checked.' '.$disabled.' />';
+                                echo '  <label for="'.$name.'">'.Lang::tr($name).'</label>';
+                            }
+                            
+                            if($name == TransferOptions::ENABLE_RECIPIENT_EMAIL_DOWNLOAD_COMPLETE)
+                                echo '<div class="info message">'.Lang::tr('enable_recipient_email_download_complete_warning').'</div>';
+                            if($name == TransferOptions::WEB_NOTIFICATION_WHEN_UPLOAD_IS_COMPLETE && Browser::instance()->isFirefox)
+                                echo '<div class="info message"><a class="enable_web_notifications" href="#">'.Lang::tr('click_to_enable_web_notifications').'</a></div>';
+                            
+                            echo '</div>';
+                        };
+                    ?>
+                    
+                    <div class="left_options">
+                    <?php
+                    $ops = Transfer::availableOptions();
+                    if( array_key_exists( 'hide_sender_email', $ops )) {
+                        $displayoption('hide_sender_email', $ops['hide_sender_email'], Auth::isGuest(), false, array() );
+                    }
+                    ?>
+                    </div>
                     
                     <?php if($allow_recipients) { ?>
                     <div class="fieldcontainer" data-related-to="message">
@@ -266,54 +347,6 @@ if(Auth::isGuest()) {
                     </div>
                 </td>
                 <td class="box">
-                    <?php
-                        $displayoption = function($name, $cfg, $disable = false, $forcedOption = false) use ($guest_can_only_send_to_creator) {
-                            $text = in_array($name, array(TransferOptions::REDIRECT_URL_ON_COMPLETE));
-
-                            
-                            
-                            $default = $cfg['default'];
-                            if( !$forcedOption ) {
-                                if(Auth::isSP() && !$text)
-                                    $default = Auth::user()->defaultTransferOptionState($name);
-                            }
-                            
-                            $checked = $default ? 'checked="checked"' : '';
-                            $disabled = $disable ? 'disabled="disabled"' : '';
-                            $extraDivAttrs = '';
-                            if(Auth::isGuest() && $disable) {
-                                if( Config::get('guest_upload_page_hide_unchangable_options')) {
-                                    $extraDivAttrs .= ' hidden="true" ';
-                                }
-                            }
-
-                            // if they are a guest and can only send to the user
-                            // who sent the guest voucher to them then don't even
-                            // show the get a link option.
-                            if(Auth::isGuest() && $name == 'get_a_link') {
-                                if($name == 'get_a_link' && $guest_can_only_send_to_creator ) {
-                                    return;
-                                }
-                            }
-                            
-                            echo '<div class="fieldcontainer" data-option="'.$name.'" '. $extraDivAttrs .'>';
-                            if($text) {
-                                echo '    <label for="'.$name.'">'.Lang::tr($name).'</label>';
-                                echo '    <input id="'.$name.'" name="'.$name.'" type="text" value="'.htmlspecialchars($default).'" '.$disabled.'>';
-                                
-                            } else {
-                                echo '  <input id="'.$name.'" name="'.$name.'" type="checkbox" '.$checked.' '.$disabled.' />';
-                                echo '  <label for="'.$name.'">'.Lang::tr($name).'</label>';
-                            }
-                            
-                            if($name == TransferOptions::ENABLE_RECIPIENT_EMAIL_DOWNLOAD_COMPLETE)
-                                echo '<div class="info message">'.Lang::tr('enable_recipient_email_download_complete_warning').'</div>';
-                            if($name == TransferOptions::WEB_NOTIFICATION_WHEN_UPLOAD_IS_COMPLETE && Browser::instance()->isFirefox)
-                                echo '<div class="info message"><a class="enable_web_notifications" href="#">'.Lang::tr('click_to_enable_web_notifications').'</a></div>';
-                            
-                            echo '</div>';
-                        };
-                    ?>
 
                     <div class="basic_options">
                         <div class="fieldcontainer">

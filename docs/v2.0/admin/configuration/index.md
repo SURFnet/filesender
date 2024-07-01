@@ -33,6 +33,11 @@ A note about colours;
 * [tmp_path](#tmp_path)
 * [site_css](#site_css)
 * [site_logo](#site_logo)
+* [download_verification_code_enabled](#download_verification_code_enabled)
+* [download_verification_code_valid_duration](#download_verification_code_valid_duration)
+* [download_verification_code_random_bytes_used](#download_verification_code_random_bytes_used)
+* [download_show_download_links](#download_show_download_links)
+
 
 ## Security settings
 * [use_strict_csp](#use_strict_csp)
@@ -50,6 +55,7 @@ A note about colours;
 * [upload_crypted_chunk_size](#upload_crypted_chunk_size)
 * [cookie_domain](#cookie_domain)
 * [rate_limits](#rate_limits) (rate limits for some actions)
+* [valid_filename_regex](#valid_filename_regex)
 
 
 ## Backend storage
@@ -61,6 +67,11 @@ A note about colours;
 * [storage_filesystem_tree_deletion_command](#storage_filesystem_tree_deletion_command)
 * [storage_usage_warning](#storage_usage_warning)
 * [storage_filesystem_hashing](#storage_filesystem_hashing)
+* [storage_filesystem_per_day_buckets](#storage_filesystem_per_day_buckets)
+* [storage_filesystem_per_hour_buckets](#storage_filesystem_per_hour_buckets)
+* [storage_filesystem_per_day_max_age_to_create_directory](#storage_filesystem_per_day_min_age_to_create_directory)
+* [storage_filesystem_per_day_min_days_to_clean_empty_directories](#storage_filesystem_per_day_min_days_to_clean_empty_directories)
+* [storage_filesystem_per_day_max_days_to_clean_empty_directories](#storage_filesystem_per_day_max_days_to_clean_empty_directories)
 * [storage_filesystem_ignore_disk_full_check](#storage_filesystem_ignore_disk_full_check)
 * [storage_filesystem_external_script](#storage_filesystem_external_script)
 * [cloud_s3_region](#cloud_s3_region)
@@ -110,6 +121,7 @@ A note about colours;
 * [email_use_html](#email_use_html)
 * [email_newline](#email_newline)
 * [email_headers](#email_headers)
+* [email_send_with_minus_r_option](#email_send_with_minus_r_option)
 * [relay_unknown_feedbacks](#relay_unknown_feedbacks)
 * [translatable_emails_lifetime](#translatable_emails_lifetime)
 
@@ -133,6 +145,12 @@ A note about colours;
 * [allow_pages_add_for_guest](#allow_pages_add_for_guest)
 * [allow_pages_add_for_user](#allow_pages_add_for_user)
 * [allow_pages_add_for_admin](#allow_pages_add_for_admin)
+* [can_view_statistics](#can_view_statistics)
+* [can_view_aggregate_statistics](#can_view_aggregate_statistics)
+* [auth_sp_saml_can_view_statistics_entitlement](#auth_sp_saml_can_view_statistics_entitlement)
+* [auth_sp_saml_can_view_aggregate_statistics_entitlement](#auth_sp_saml_can_view_aggregate_statistics_entitlement)
+* [read_only_mode](#read_only_mode)
+
 
 
 ## Transfers
@@ -184,6 +202,8 @@ A note about colours;
 * [streamsaver_on_safari](#streamsaver_safari)
 * [recipient_reminder_limit](#recipient_reminder_limit)
 * [log_authenticated_user_download_by_ensure_user_as_recipient](#log_authenticated_user_download_by_ensure_user_as_recipient)
+* [transfer_automatic_reminder](#transfer_automatic_reminder)
+* [transfers_table_show_admin_full_path_to_each_file](#transfers_table_show_admin_full_path_to_each_file)
 
 ## Graphs
 
@@ -261,6 +281,7 @@ A note about colours;
 * [statlog_log_user_additional_attributes](#statlog_log_user_additional_attributes)
 * [auth_sp_fake_additional_attributes_values](#auth_sp_fake_additional_attributes_values)
 * [auditlog_lifetime](#auditlog_lifetime)
+* [ratelimithistory_lifetime](#ratelimithistory_lifetime)
 * [report_format](#report_format)
 * [exception_additional_logging_regex](#exception_additional_logging_regex)
 * [clientlogs_stashsize](#clientlogs_stashsize)
@@ -268,6 +289,7 @@ A note about colours;
 * [logs_limit_messages_from_same_ip_address](#logs_limit_messages_from_same_ip_address)
 * [trackingevents_lifetime](#trackingevents_lifetime)
 * [client_ip_key](#client_ip_key)
+* [exception_skip_logging](#exception_skip_logging)
 
 ## Webservices API
 
@@ -398,7 +420,41 @@ A note about colours;
 * __default:__ $config['site_url'].'?s=logout'
 * __available:__ since version 1.6
 
+### download_verification_code_enabled
 
+* __description:__ Check that the user has access to their email address by sending a one time code to them and requiring them to enter that code before they can download files in a transfer. This is restricted to checking only users who have not logged in to the system.
+* __mandatory:__ no.
+* __type:__ bool
+* __default:__ false
+* __available:__ since version 2.41
+
+
+### download_verification_code_valid_duration
+
+* __description:__ how long a verify by email code should be valid for (in seconds).
+* __mandatory:__ no.
+* __type:__ int
+* __default:__ 60*15
+* __available:__ since version 2.41
+* __comment:__ Default should be ok.
+
+### download_verification_code_random_bytes_used
+
+* __description:__ how many random bytes to use in the download verification code
+* __mandatory:__ no.
+* __type:__ int
+* __default:__ 8
+* __available:__ since version 2.41
+* __comment:__ Default should be ok.
+
+### download_show_download_links
+
+* __description:__ show direct download urls on download page
+* __mandatory:__ no.
+* __type:__ bool
+* __default:__ false
+* __available:__ since version 2.42
+* __comment:__ Default should be ok.
 
 
 
@@ -538,6 +594,33 @@ A note about colours;
                The mime AV program defaults to using the first 8k of content to determine the MIME type, use bytesToConsider
                to change this. Setting bytesToConsider to values below 8k will have no effect.
 
+               Note that these programs are only executed when you run execute-av-program-on-files.php on the server. 
+               The execute-av-program-on-files.php script needs permissions to access to the uploaded files and the database.
+               The execute-av-program-on-files.php script will work on a small batch of files and sleep 10 seconds and then
+               work on the next batch of files. It may be that the script needs to be improved for larger sites to allow many
+               machines to access and perform these tasks as they can be time consuming depending on the scanner.
+
+               The expected setup will use virus scanners over https passing the file stream to the scanner and retrieving the
+               results of that scan to store in the database. An example of this is provided in
+               classes/avprograms/AVProgramURLTest.php. The AVProgramURLTest.php can be installed on a web server and will
+               fail for content that contains a bad word which in this case is literally "badword". The AVProgramURLTest is
+               provided as an example that can be fleshed out to use other malware scanners as an installation desires.
+
+               If you are using the 'url' method then FileSender will post file content to that URL and expect an JSON result
+               indicating the result of the scan. For example for a success:
+               { "passes": "1", "error": "0", "reason": "clean." }
+               or something like the following or for an error:
+               { "passes": "0", "error": "0", "reason": "contains a Trojan (56% certainty)." }
+               or if the scanner itself encountered an error:
+               { "passes": "0", "error": "1", "reason": "unable to use local database to compare data with." }.
+
+               From an implementation perspective, results are recorded in the AVResults table and the download page will
+               display the results of scans if they are available.
+
+               
+
+
+
 ```
 $config['avprogram_list'] = array( 'always_pass',
                                    'mime' => array(
@@ -656,10 +739,20 @@ This way the encryption_key_version_new_files can be updated and existing upload
 * __description:__ Some actions have hard or soft limits that can be applied. For example, actions that result in sending an email may have a soft limit that will perform the action but not send an email after the nominated number of actions is performed per time period. This allows for the system to prevent a nefarious guest from sending too many emails. The database table ratelimithistorys is used to track the information needed for this option. The time period for actions performed used for the initial implementation is 24 hours. For example, with the right setting you can not create more than 200 guests in a 24 hour block of time. There are two types of limits, hard and soft. A hard limit will be checked before performing an action and if the limit is already reached the action will not be performed. For example, creating a guest or sending a transfer_reminder is a hard limit. This is because creating a guest may require sending an email to be performed so it is not useful to try to perform the action if the rate limit is already reached. Some actions are soft limits such as guest_upload_start and will only effect the sending of an email. For the guest_upload_start example, if the limit is 30 per day then a guest may start an upload 1000 times and you will only receive emails for the first 30 attempts. This way the system remains functional but does not try to produce excessive emails while it is performing that function. In general a soft limit is to protect against excessive email but not to limit the use of the system itself.
 * __mandatory:__ no
 * __type:__ array
-* __default:__
+* __default:__ '$config['rate_limits'] = array(
+            'email' => array(
+            'guest_created'      => array( 'day' => 100 ),
+            'report_inline'      => array( 'day' => 100 ),
+            'transfer_reminder'  => array( 'day' => 100 ),
+            'download_complete'  => array( 'day' => 500 ),
+            'files_downloaded'   => array( 'day' => 500 ),
+            'guest_upload_start' => array( 'day' => 100 ),
+            'transfer_available' => array( 'day' => 500 ),
+        ),
+    );'
 * __available:__ since version 2.33
 * __1.x name:__
-* __comment:__ For current defaults see https://github.com/filesender/filesender/search?q=rate_limits+in%3Afile+path%3Aincludes
+* __comment:__ For current defaults see https://github.com/search?q=repo%3Afilesender%2Ffilesender+rate_limits+path%3Aincludes
 * __*Standard parameters for all options:*__
 	* __day__(integer): The number of times this action can be performed per day.
 ed off by the user.
@@ -685,6 +778,27 @@ $config['rate_limits'] = array(
             'transfer_available' => array( 'day' => 200 ),
         ),
 );
+
+
+### valid_filename_regex
+* __description:__ Regular exression that must match a file name in an upload for that file to be allowed
+* __mandatory:__ no
+* __type:__ string
+* __default:__ '^[ \\/\\p{L}\\p{N}_\\.,;:!@#$%^&*)(\\]\\[_-]+'
+* __available:__ since version 2.0
+* __comment:__ You may wish to allow more characters to this
+               expression to allow emoji in file names for example.
+               One might like to consider potential cases such as the
+               unicode U+2044 fraction slash which might be confused
+               with a / and U+205F which is a math space and might be
+               confused with a regular space. The ending '$' will be
+               added to match against the end of string for you.
+               
+* __*Configuration example:*__
+  //  adds '+' in ASCII
+  //  adds special character areas, for example MIDDLE DOT U+30FB
+$config['valid_filename_regex'] = '^['."\u{2010}-\u{2027}\u{2030}-\u{205F}\u{2070}-\u{FFEF}\u{10000}-\u{10FFFF}".' \\/\\p{L}\\p{N}_\\.,;:!@#$%^&*+)(\\]\\[_-]+';
+
 
 
 ---
@@ -763,6 +877,60 @@ $config['rate_limits'] = array(
 * __1.x name:__
 * __comment:__ not tested
 * __comment:__ basically integer. use fileUID (which is used to create name on hard drive) + as many characters as the hashing value (if you set hashing to 2 you take the 2 first letters of the fileUID (big random string) and use these two characters to create a directory structure under the storage path. This avoids having all files in the same directory. If you set this to 1 you have 16 possible different values for the directory structure under the storage root. You'll have 16 folders under your storage root under which you'll have the files. This allows you to spread files over different file systems / hard drives. You can aggregate storage space without using things like LVM. If you set this to two you have 2 levels of subdirectories. For directory naming: first level, directory names has one letter. Second level has two: letter from upper level + own level. Temporary chunks are stored directly in the final file. No temp folder (!!) Benchmarking between writing small file in potentially huge directory and opening big file and seeking in it was negligible. Can just open final file, seek to location of chunk offset and write data. Removes need to move file in the end.  It can also be "callable". We call the function giving it the file object which hold all properties of the file. Reference to the transfer as well. The function has to return a path under the storage root. This is a path related to storage root. For example: if you want to store small files in a small file directory and big files in big directory. F.ex. if file->size < 100 MB store on fast small disk, if > 100 MB store on big slow disk. Can also be used for functions to store new files on new storage while the existing files remain on existing storage. Note: we need contributions for useful functions here :)
+
+
+### storage_filesystem_per_day_buckets
+
+* __description:__ Store files in a subdirectory based on the day they were created.
+* __mandatory:__ no
+* __type:__ **bool** 
+* __default:__ false
+* __available:__ since version 2.45
+* __comment:__ This requires version 7 UUIDs to be in use. The timestamp from the v7 uuid is taken and the seconds since midnight are removed and that is used to create a subdirectory for the stored files. See also storage_filesystem_per_hour_buckets. Note that this works with storage_filesystem_per_hour_buckets, if both are enabled then first a daily directory is made and then an hourly directory is created in the day directory and the files are stored in the hourly subdirectory. This will allow the number of entries in a directory to be controlled by a system administrator and the use of v7 uuid will also permit the kernel filesystem to better index entry lookup.
+
+
+
+### storage_filesystem_per_hour_buckets
+
+* __description:__ Store files in a subdirectory based on the hour they were created.
+* __mandatory:__ no
+* __type:__ **bool** 
+* __default:__ false
+* __available:__ since version 2.45
+* __comment:__ This requires version 7 UUIDs to be in use. The timestamp from the v7 uuid is taken and the seconds since the start of the hour are removed and that is used to create a subdirectory for the stored files. See also storage_filesystem_per_day_buckets for an overview of this feature.
+
+### storage_filesystem_per_day_max_age_to_create_directory
+
+* __description:__ Mostly internal use. Bucket directories are created automatically. This is the maximum number of days ago to create these subdirectory buckets.
+* __mandatory:__ no
+* __type:__ int
+* __default:__ 7
+* __available:__ since version 2.47
+* __comment:__ This is mostly for internal use and likely fine to leave at default. This prevents bucket subdirectories from being recreated if very old files are listed where the file content is already deleted by the cron job.
+
+### storage_filesystem_per_day_min_days_to_clean_empty_directories
+
+* __description:__ Mostly internal use. How many days ago the cron job starts to consider when looking for empty bucket directories to delete
+* __mandatory:__ no
+* __type:__ int
+* __default:__ -1 which means this is set to max_transfer_days_valid
+* __available:__ since version 2.47
+* __comment:__ This is mostly for internal use and likely fine to leave at default. 
+
+
+### storage_filesystem_per_day_max_days_to_clean_empty_directories
+
+* __description:__ Mostly internal use. How far back from storage_filesystem_per_day_min_days_to_clean_empty_directories to consider when trying to delete empty bucket directories
+* __mandatory:__ no
+* __type:__ int
+* __default:__ 150
+* __available:__ since version 2.47
+* __comment:__ This is mostly for internal use and likely fine to leave at default. 
+
+
+
+
+
 
 
 ### storage_filesystem_ignore_disk_full_check
@@ -991,13 +1159,14 @@ Default value to maintain AWS S3 compatibility is 1000. Other storage platforms 
 
 ### db_table_prefix
 
-* __description:__ table prefix to use.  Allows you to have several filesender instances in one database.  For example if you buy hosting with 1 database and still want multiple filesender instances.
-* __mandatory:__ <span style="background-color:orange">?  Would think not?</yes>
+* __description:__ This is known to have issues in 2.41 and is now deprecated. This feature will be removed in the 3.x release. table prefix to use.  Allows you to have several filesender instances in one database.  For example if you buy hosting with 1 database and still want multiple filesender instances.
+* __mandatory:__ no</yes>
 * __type:__ string
 * __default:__ -
 * __available:__ since version 2.0
 * __1.x name:__
-* __comment:__
+* __comment:__ 
+  Deprecated. This feature will be removed in the 3.x release
 
 
 ### db_driver_options
@@ -1177,6 +1346,17 @@ User language detection is done in the following order:
 * __default:__ false
 * __available:__ since version 2.x
 * __comment:__ E.g. add to your `$config['email_headers'] = array('Auto-Submitted' => 'auto-generated', 'X-Auto-Response-Suppress' => 'All');` to add these 2 headers with their respective values to all outgoing emails.
+
+
+### email_send_with_minus_r_option
+
+* __description:__ Use the -r option to mail() if return_path is set. This was the default behavior in all 2.x series released but the FileSender 2.41 release.
+* __mandatory:__ no
+* __type:__ boolean
+* __default:__ true
+* __available:__ since version 2.42
+* __comment:__ This may allow for FileSender in container installations to work where the -r option is not desired and can be turned off for that.
+
 
 ### relay_unknown_feedbacks
 
@@ -1376,6 +1556,46 @@ User language detection is done in the following order:
 * __comment:__ See also allow_pages_core
 
 
+### can_view_statistics
+* __description:__ Access to the statistics tab is governed by this setting which has similar format to the admin setting. This is a comma separated list of uids which will be matched against the saml_user_identification_uid column in the authentications table of the database. Normally this is the full email of the user who is logging in. You can also use the auth_sp_saml_can_view_statistics_entitlement and auth_sp_saml_can_view_aggregate_statistics_entitlement settings to enabled these features using attributes from SAML.
+* __mandatory:__ no
+* __type:__ string
+* __default:__ ""
+* __available:__ since version 2.8
+* __comment:__ See also can_view_aggregate_statistics, admin
+
+### can_view_aggregate_statistics
+* __description:__ Access to the statistics tab is governed by this setting which has similar format to the admin setting. This is a comma separated list of uids which will be matched against the saml_user_identification_uid column in the authentications table of the database. Normally this is the full email of the user who is logging in. You can also use the auth_sp_saml_can_view_statistics_entitlement and auth_sp_saml_can_view_aggregate_statistics_entitlement settings to enabled these features using attributes from SAML.
+* __mandatory:__ no
+* __type:__ string
+* __default:__ ""
+* __available:__ since version 2.8
+* __comment:__ See also can_view_statistics
+
+### auth_sp_saml_can_view_statistics_entitlement
+* __description:__  This is the name of an entitlement_attribute from the authentication session that will grant an authenticated user access to the statistics page. For full details see the Auth::isPrivilegeAllowed() method.
+* __mandatory:__ no
+* __type:__ string
+* __default:__ ""
+* __available:__ since version 2.8
+* __comment:__ See also can_view_statistics
+
+### auth_sp_saml_can_view_aggregate_statistics_entitlement
+* __description:__  This is the name of an entitlement_attribute from the authentication session that will grant an authenticated user access to the aggregate statistics page. For full details see the Auth::isPrivilegeAllowed() method.
+* __mandatory:__ no
+* __type:__ string
+* __default:__ ""
+* __available:__ since version 2.8
+* __comment:__ See also can_view_statistics
+
+
+### read_only_mode
+* __description:__  Do not allow new transfers and guests to be created.
+* __mandatory:__ no
+* __type:__ boolean
+* __default:__ false
+* __available:__ since version 2.48
+* __comment:__ If you are performing a major upgrade you might like to retain an original FileSender installation in read only mode so users can continue to download existing files and redirect visitors to a new site for new uploads. This may be useful for upgrading between major FileSender releases such as the 2.x series to the 3.x series and also for change in infrastructure such as moving to different disk pools or storage back ends.
 
 
 
@@ -1572,10 +1792,11 @@ If you want to find out the expiry timer for your SAML Identity Provider install
 	* __email\_recipient\_when\_transfer\_expires:__ As of release 2.21 this is a global default setting to email users when a transfer expires during cron execution. The default is true to maintain the previous functionality as it was. Setting this to false will not send out emails to intended recipients as transfers are expired by the cron job. This is set here because it may be able to be adjusted by a user in the UI in the future for each transfer.
 	* __enable\_recipient\_email\_download\_complete:__ this gives the downloader a tick box in the download window which in turn lets the downloader indicate they would like to receive an email once the download is finished.  If you want this option available for all downloaders and do not want to bother the uploader with it, simply configure it with 'default' => false as the only parameter. __Warning:__ if the recipient of a file is a mailinglist and someone ticks the "send me a message on download complete" box, then all members of that mailinglist will receive that message.  That might be a reason why you don't want to make this option available to your users.        
 	* __add\_me\_to\_recipients:__ include the sender as one of the recipients.
-	* __get\_a\_link:__ if checked it will not send any emails, only present the uploader with a download link once the upload is complete.  This is useful when sending files to mailinglists, newsletters etc.  When ticked the message subject and message text box disappear from the UI.  Under the hood it creates an anonymous recipient with a token for download.  You can se the download count, but not who downloaded it (obviously, as there are no recipients defined).
+	* __get\_a\_link:__ if checked it will not send any emails, only present the uploader with a download link once the upload is complete.  This is useful when sending files to mailinglists, newsletters etc.  When ticked the message subject and message text box disappear from the UI.  Under the hood it creates an anonymous recipient with a token for download.  You can see the download count, but not who downloaded it (obviously, as there are no recipients defined).
+	* __hide\_sender\_email:__ If checked it will hide the sender's email address on the download page. The option is only displayed if the __get\_a\_link__ option is checked. This is useful when sending download links to mailing lists, etc., and you do not want your personal email account to be displayed on the download page.
 	* __redirect_url_on_complete:__ When the transfer upload completes, instead of showing a success message, redirect the user to a URL. This interferes with __get\_a\_link__ in that the uploader will not see the link after the upload completes. Additionally, if the uploader is a guest, there is no way straightforward way for the uploader to learn the download link, although this must not be used as a security feature.
-        * __must_be_logged_in_to_download__ (boolean): To download the files the user must log in to the FileSender server. This allows people to send files to other people they know also use the same FileSender server.
-        * __web_notification_when_upload_is_complete__: Added in release 2.32. Options include available, advanced, and default. If you wish to use this feature you should set available=true to allow the user to see the option. Some browsers such as Firefox require the user to explicitly click a link to start the acceptance dialog so being able to see the option (available=true) on the web page is very useful. Using notifications will require the user to accept them for the site. Currently as of release 2.32 a notification can be sent when the upload is complete.
+	* __must_be_logged_in_to_download__ (boolean): To download the files the user must log in to the FileSender server. This allows people to send files to other people they know also use the same FileSender server.
+	* __web_notification_when_upload_is_complete__: Added in release 2.32. Options include available, advanced, and default. If you wish to use this feature you should set available=true to allow the user to see the option. Some browsers such as Firefox require the user to explicitly click a link to start the acceptance dialog so being able to see the option (available=true) on the web page is very useful. Using notifications will require the user to accept them for the site. Currently as of release 2.32 a notification can be sent when the upload is complete.
 
 * __*Configuration example:*__
 
@@ -1955,7 +2176,21 @@ This is only for old, existing transfers which have no roundtriptoken set.
 * __type:__ boolean
 * __default:__ true
 * __available:__ since version 2.19
-* __comment:__ 
+* __comment:__
+
+
+### fileSystemWritableFileStream_enabled
+* __description:__ Allow the use of the FileSystemWritableFileStream API to perform streaming download of encrypted files on supported browsers.
+* __mandatory:__ no 
+* __recommend_leaving_at_default:__ true
+* __type:__ boolean
+* __default:__ false
+* __available:__ since version 2.41
+* __comment:__
+    This feature is currently only available when you have streamsaver_enabled=true set. This will prefer to use the
+    FileSystemWritableFileStream API when available to stream data to disk. As at mid 2023 Edge and Chrome support
+    this feature, Firefox supports most but not all (so can not be used) and Safari does not support the feature.
+    In the future this may be separated from the streamsaver_enabled option so it can be enabled independently.
 
 ### recipient_reminder_limit
 
@@ -2010,7 +2245,42 @@ This is only for old, existing transfers which have no roundtriptoken set.
 
 
 
+### transfer_automatic_reminder
 
+* __description:__ The number of reminders that a user can send to a recipient
+* __mandatory:__ no
+* __type:__ int, array of int, or false
+* __default:__ false
+* __available:__ since before version 2.40
+* __comment:__ This is used in the cron job to allow notifications to be sent to users
+  who have not downloaded files and the expire time for those files is coming up. The integer
+  is the number of days that remain before the transfer expires. Note that a user will only be notified
+  if they have not already downloaded the file.
+  
+  In the below configurations the first will notify people who have not downloaded a transfer a week from
+  it expiring. The second will result to two potential notifications, one 10 days out and one a week from
+  expiring. Note that if the user receives the first notification and downloads the file they will not receive
+  the notification a week out because they have already downloaded the file.
+  
+* __*Configuration example:*__
+   $config['transfer_automatic_reminder'] = 7;
+   $config['transfer_automatic_reminder'] = array(7,10);
+
+
+
+### transfers_table_show_admin_full_path_to_each_file
+
+* __description:__ In the transfers table show the local path for the data for each file
+* __mandatory:__ no
+* __type:__ bool
+* __default:__ false
+* __available:__ since before version 2.46
+* __comment:__ A debugging option to allow an admin to see where the file content is stored for each
+               file in every transfer. This allows direct inspection of the disk without having to
+               work out the transfer id and uuid for a file in the case that an admin wishes to inspect 
+               the disk. This can be useful when storage_filesystem_per_day_buckets is enabled as there
+               will be subdirectories that are calculated from the timestamp in the uuid which may not
+               be immediately obvious to a human.
 
 
 
@@ -2799,6 +3069,16 @@ $config['log_facilities'] =
 * __1.x name:__
 * __comment:__ Use this setting to control the privacy footprint of your FileSender service.
 
+### ratelimithistory_lifetime
+
+* __description:__ The ratelimithistory entries are kept in the database for this long. Should be at least a day, default is a month.
+* __mandatory:__ no
+* __type:__ boolean/int (days).  Set to false to disable.
+* __default:__ 31
+* __available:__ since version 2.42
+* __1.x name:__
+* __comment:__ Use this setting to control the privacy footprint of your FileSender service.
+
 ### report_format
 
 * __description:__ A user can ask for an audit report specifying what happened to a transfer when.  This can be done when initiating a transfer by ticking the checkbox or explicitly through MyTransfers (view audit log).  This setting specifies what type of report will be generated.
@@ -2848,6 +3128,20 @@ $config['log_facilities'] =
 * __default__: REMOTE_ADDR
 * __available:__ v2.2
 * __comment:__ Client identifier. Usually the default is fine, however when you have reverse proxy setups, you may need to change this to HTTP_CLIENT_IP, HTTP_X_REAL_IP, HTTP_X_FORWARDED_FOR, depending on your setup.
+
+
+### exception_skip_logging
+
+* __description:__ An array of exception class names to ignore during logging
+* __mandatory:__ no
+* __type:__ array of string
+* __default__: 
+* __available:__ v2.48
+* __comment:__ A list of php exception class names to not trigger logging messages. For example:
+	<pre><code>
+      $config['exception_skip_logging'] = array('AuthRemoteSignatureCheckFailedException');
+    </code></pre>
+
 
 
 ### logs_limit_messages_from_same_ip_address

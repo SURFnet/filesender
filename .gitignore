@@ -18,3 +18,9 @@ import-all-poeditor-langs-and-push.sh
 scripts/client/test.php
 scripts/testing/test1.php
 
+/.phpactor.json
+/docs/.bundle/
+
+scripts/client/nodeclient/node_modules/
+scripts/client/nodeclient/package-lock.json
+

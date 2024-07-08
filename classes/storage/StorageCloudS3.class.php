@@ -278,8 +278,17 @@ class StorageCloudS3 extends StorageFilesystem
                 ));
             }
         } catch (Exception $e) {
-            Logger::info('deleteFile() error ' . $e);
-            throw new StorageFilesystemCannotDeleteException($file_path, $file);
+            if (preg_match('/NoSuchBucket/', $e)) {
+                // S3 backend has returned a NoSuchBucket error, this happens when we have already
+                // deleted this file (when using per-file buckets) or the daily bucket was empty and has
+                // already been deleted (when using daily buckets).
+                // 
+                // Usually this happens when Transfer was deleted when it expired and cron.php re-deletes
+                // all files when it's purging the transfer from database.
+            } else {
+                Logger::info('deleteFile() error ' . $e);
+                throw new StorageFilesystemCannotDeleteException($file_path, $file);
+            }
         }
     }
 
@@ -423,4 +432,32 @@ class StorageCloudS3 extends StorageFilesystem
         return true;
     }
 
+    /**
+     * Add custom bucket name info to transfer options
+     * 
+     * @param array $options
+     * 
+     * @return array new options
+     * 
+     */
+    public static function augmentTransferOptions( $options )
+    {
+        if( strtolower(Config::get('storage_type')) == 'clouds3' ) {
+            if (Config::get('cloud_s3_use_daily_bucket')) {
+                $options[TransferOptions::STORAGE_CLOUD_S3_BUCKET] = "";
+                $v = Config::get('cloud_s3_bucket_prefix');
+                if( $v && $v != '' ) {
+                    $options[TransferOptions::STORAGE_CLOUD_S3_BUCKET] = $v;
+                }
+                $options[TransferOptions::STORAGE_CLOUD_S3_BUCKET] .= date("Y-m-d");
+            } else {
+                $v = Config::get('cloud_s3_bucket');
+                if( $v && $v != '' ) {
+                    $options[TransferOptions::STORAGE_CLOUD_S3_BUCKET] = $v;
+                }
+            }
+        }
+
+        return $options;
+    }
 }

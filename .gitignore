@@ -1,6 +1,8 @@
 /tmp
 /files
 /config/config.php
+/config/templates
+/config/language
 /docs/_book
 /docs/_site
 /log
@@ -15,12 +17,18 @@ composer.phar
 bak/
 git-switch-to-current-latest-development.sh
 import-all-poeditor-langs-and-push.sh
+import-all-poeditor-langs-and-push3.sh
 scripts/client/test.php
 scripts/testing/test1.php
-
+simplesaml
+simplesamlphp-*
 /.phpactor.json
 /docs/.bundle/
 
 scripts/client/nodeclient/node_modules/
 scripts/client/nodeclient/package-lock.json
+
+scripts/testing/show-authsp-logonurl.php
+scripts/upgrade/validate.php
+vm-sync-to-local-filesenderci39.sh
 

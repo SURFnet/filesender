@@ -128,6 +128,17 @@ class User extends DBObject
             'type' => 'datetime',
             'null' => true
         ),
+        
+        'save_frequent_email_address' => array(
+            'type' => 'bool',
+            'null'    => false,
+            'default' => true,
+        ),
+        'save_transfer_preferences' => array(
+            'type' => 'bool',
+            'null'    => false,
+            'default' => true,
+        ),
     );
 
 
@@ -175,6 +186,8 @@ class User extends DBObject
     protected $guest_expiry_default_days = null;
     protected $service_aup_accepted_version = 0;
     protected $service_aup_accepted_time = null;
+    protected $save_frequent_email_address = true;
+    protected $save_transfer_preferences = true;
 
     
     /** 
@@ -417,10 +430,8 @@ class User extends DBObject
      */
     public function getFrequentRecipients($criteria = null)
     {
-        if( Config::get('data_protection_user_frequent_email_address_disabled')) {
-            return array();
-        }
-
+==== BASE ====
+==== BASE ====
         // Get max number of returned recipients from config
         $size = Config::get('autocomplete');
         if (!$size || !is_int($size) || $size <= 0) {
@@ -490,11 +501,8 @@ class User extends DBObject
         }
         
         $recipients = $size ? array_slice($recipients, 0, $size) : array();
-
-        // wipe it out if that is what the admin wants.
-        if( Config::get('data_protection_user_frequent_email_address_disabled')) {
-            $recipients = array();
-        }
+==== BASE ====
+==== BASE ====
         
         // Save if something changed
         if ($recipients !== $this->frequent_recipients) {
@@ -608,6 +616,10 @@ class User extends DBObject
         }
         
         $score = $props->$option;
+
+        if( $this->save_transfer_preferences ) {
+            return $score;
+        }
         
         if (abs($score) < 3) {
             return $default;
@@ -656,7 +668,8 @@ class User extends DBObject
             'auth_secret_created',
             'transfer_preferences', 'guest_preferences', 'frequent_recipients', 'created', 'last_activity',
             'email_addresses', 'name', 'quota', 'authid'
-          , 'guest_expiry_default_days', 'service_aup_accepted_version', 'service_aup_accepted_time'
+==== BASE ====
+==== BASE ====
         ))) {
             return $this->$property;
         }
@@ -719,12 +732,9 @@ class User extends DBObject
         } elseif ($property == 'guest_preferences') {
             $this->guest_preferences = $value;
         } elseif ($property == 'frequent_recipients') {
-            if( Config::get('data_protection_user_frequent_email_address_disabled')) {
-                // keep nothing.
-                $this->frequent_recipients = array();
-            } else {
-                $this->frequent_recipients = $value;
-            }
+==== BASE ====
+            $this->frequent_recipients = $value;
+==== BASE ====
         } elseif ($property == 'email_addresses') {
             if (!is_array($value)) {
                 $value = array($value);
@@ -739,23 +749,14 @@ class User extends DBObject
             $this->name = (string)$value;
         } elseif ($property == 'quota') {
             $this->quota = (int)$value;
-        } elseif ($property == 'eventcount') {
-            $this->eventcount = (int)$value;
-        } elseif ($property == 'eventip') {
-            $this->eventip = $value;
-        } elseif ($property == 'guest_expiry_default_days') {
-            $this->guest_expiry_default_days = (int)$value;
-            if( $this->guest_expiry_default_days == 0 ) {
-                $this->guest_expiry_default_days = null;
-            }
-        } elseif ($property == 'service_aup_accepted_version') {
-            $this->service_aup_accepted_version = $value;
-        } elseif ($property == 'service_aup_accepted_time') {
-            $this->service_aup_accepted_time = $value;
+==== BASE ====
+==== BASE ====
         } else {
             throw new PropertyAccessException($this, $property);
         }
     }
+
+    
 
     /**
      * Delete the user related objects that the database delete will not remove.
@@ -782,88 +783,6 @@ class User extends DBObject
             $g->delete();
         }
     }
-
-    public function beforeSave()
-    {
-        if( Config::get('data_protection_user_frequent_email_address_disabled')) {
-            $this->frequent_recipients = array();
-        }
-        if( Config::get('data_protection_user_transfer_preferences_disabled')) {
-            $this->transfer_preferences = null;
-        }
-    }
-
-    public function remindLocalAuthDBPassword( $password )
-    {
-        $user = $this;
-        TranslatableEmail::quickSend('local_authdb_password_reminder', $user, array('password' => $password));
-    }
-
-    public function exportMyData()
-    {
-        $user = $this;
-        $ret = array();
-
-        $statement = DBI::prepare('SELECT * FROM '.User::getDBTable().' WHERE id = :id');
-        $statement->execute(array(':id' => $user->id));
-        $ret['user'] = $statement->fetch();
-
-        //
-        // My guests
-        //
-        $ret['guests'] = array();
-        $guests = Guest::fromUser($user);
-        foreach ($guests as $g) {
-            $id = $g->id;
-            $ret['guests'][$id] = $g;
-        }
-
-        //
-        // My transfers
-        //
-        $ret['transfers'] = array();
-        $statement = DBI::prepare('SELECT * FROM '.Transfer::getDBTable().' WHERE userid = :id and ( guest_id is null or guest_transfer_shown_to_user_who_invited_guest )');
-        $statement->execute(array(':id' => $user->id));
-        $records = $statement->fetchAll();
-        foreach ($records as $r) {
-            $tid = $r['id'];
-            $ret['transfers'][$tid] = $r;
-            $transfer = Transfer::fromId($tid);
-
-            //
-            // Files in this transfer
-            //
-            $files = File::fromTransfer( $transfer );
-            foreach ($files as $file) {
-                $ret['transfers'][$tid]['file'] = $file;
-            }
-
-            //
-            // AuditLogs
-            //
-            foreach (AuditLog::fromTransfer($transfer) as $log) {
-                $lid = $log->id;
-                $ret['transfers'][$tid]['log'][$lid] = $log;
-            }
-
-            //
-            // Recipients
-            //
-            foreach ($transfer->recipients as $recipient) {
-                $rid = $recipient->id;
-                $ret['transfers'][$tid]['recipient'][$rid] = $recipient;
-            }
-
-            //
-            // Emails
-            //
-            foreach (TranslatableEmail::fromContext($transfer) as $translatable_email) {
-                $id = $translatable_email->id;
-                $ret['transfers'][$tid]['translated_email'][$id] = $translatable_email;
-            }
-        }
-        
-
-        return $ret;
-    }
+==== BASE ====
+==== BASE ====
 }

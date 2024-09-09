@@ -1,3 +1,4 @@
+==== BASE ====
 <?php
 
 /*
@@ -109,7 +110,7 @@ class Security
         }
 
         if (Auth::isGuest()) {
-            $checkToken = false;
+            $checkToken = true;
         }
         
         if( $checkToken ) {
@@ -139,3 +140,4 @@ class Security
         return '';
     }
 }
+==== BASE ====

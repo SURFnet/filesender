@@ -58,8 +58,9 @@ class RestEndpointGuest extends RestEndpoint
             'transfer_count' => $guest->transfer_count,
             'subject' => $guest->subject,
             'message' => $guest->message,
-            'options' => $guest->options,
             'transfer_options' => $guest->transfer_options,
+            'options' => array_merge( $guest->options, array( 'guest' => $guest->options,
+                                                              'transfer' => $guest->transfer_options )),
             'created' => RestUtilities::formatDate($guest->created),
             'expires' => RestUtilities::formatDate($guest->expires),
             'upload_url' => $guest->upload_link,
@@ -250,7 +251,7 @@ class RestEndpointGuest extends RestEndpoint
         }
         
         if( strtolower(Config::get('storage_type')) == 'clouds3' ) {
-            $options = StorageCloudS3::augmentTransferOptions( $options );
+            $transfer_options = StorageCloudS3::augmentTransferOptions( $transfer_options );
         }
 
         if(Auth::isRemote()) {

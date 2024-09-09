@@ -37,7 +37,6 @@ if (!defined('FILESENDER_BASE')) {
 
 require_once(FILESENDER_BASE.'/lib/random_compat/lib/random.php');
 require_once(FILESENDER_BASE.'/lib/vendor/autoload.php');
-use function PHP81_BC\strftime;
 
 /**
  * Utility functions holder
@@ -183,17 +182,48 @@ class Utilities
 
         Lang::setlocale_fromUserLang( LC_TIME );
 
-        $lid = $with_time ? 'datetime_format' : 'date_format';
-        $dateFormat = Lang::trWithConfigOverride($lid);
-        if ($dateFormat == '{date_format}') {
-            $dateFormat = '%d %b %Y';
+        $dateFormatStyle = IntlDateFormatter::MEDIUM;
+        $timeFormatStyle = IntlDateFormatter::NONE;
+        if( $with_time ) {
+            $timeFormatStyle = IntlDateFormatter::MEDIUM;
         }
-        if ($dateFormat == '{datetime_format}') {
-            $dateFormat = '%d %b %Y %T';
+        $v = Config::get("date_format_style");
+        switch($v) {
+            case "full":   $dateFormatStyle = IntlDateFormatter::FULL; break;
+            case "long":   $dateFormatStyle = IntlDateFormatter::LONG; break;
+            case "medium": $dateFormatStyle = IntlDateFormatter::MEDIUM; break;
+            case "short":  $dateFormatStyle = IntlDateFormatter::SHORT; break;
+        }
+        if( $with_time ) {
+            $v = Config::get("time_format_style");
+            switch($v) {
+                case "full":   $timeFormatStyle = IntlDateFormatter::FULL; break;
+                case "long":   $timeFormatStyle = IntlDateFormatter::LONG; break;
+                case "medium": $timeFormatStyle = IntlDateFormatter::MEDIUM; break;
+                case "short":  $timeFormatStyle = IntlDateFormatter::SHORT; break;
+            }
         }
 
-        $ts = strftime($dateFormat, (int)$timestamp);
-        return mb_convert_encoding( $ts, 'UTF-8' );
+
+        $timezone = null;
+        $al = Lang::getUserAcceptedLanguages();
+        // use default php.ini value if all else fails
+        $al[] = null; 
+        $dateFormat = null;
+
+        if( !empty($_COOKIE["x-filesender-timezone"])) {
+            $tz = $_COOKIE["x-filesender-timezone"];
+            if( !empty(Config::get("valid_timezone_regex"))
+                && preg_match(Config::get("valid_timezone_regex"), $tz)) {
+                $timezone = $tz;
+            }
+        }
+        
+        foreach ($al as $k => $v) {
+
+==== BASE ====
+        return utf8_encode(strftime($dateFormat, $timestamp));
+==== BASE ====
     }
     
     /**
@@ -321,29 +351,9 @@ class Utilities
      */
     public static function getClientIP()
     {
-        $ips = array();
-        
-        $candidates = array_reverse((array)Config::get('client_ip_key'));
-        foreach($candidates as $candidate) {
-            if(!array_key_exists($candidate, $_SERVER)) continue;
-            
-            foreach(explode(',', $_SERVER[$candidate]) as $value) {
-                $ips[] = trim($value);
-            }
-        }
-        
-        $ips = array_filter($ips, function($ip) {
-            return filter_var($ip, FILTER_VALIDATE_IP, FILTER_FLAG_NO_PRIV_RANGE | FILTER_FLAG_NO_RES_RANGE);
-        });
-        
-        if(!count($ips)) {
-            if (array_key_exists('REMOTE_ADDR', $_SERVER)) {
-                return $_SERVER['REMOTE_ADDR']; // fallback
-            }
-            return '127.0.0.1';
-        }
-        
-        return $ips[0];
+==== BASE ====
+        return isset($_SERVER[Config::get('client_ip_key')]) ? $_SERVER[Config::get('client_ip_key')] : '';
+==== BASE ====
     }
     
     /**
@@ -729,7 +739,7 @@ class Utilities
     {
         $ret = $def;
         if(array_key_exists($name, $_GET)) {
-            $ret = $_GET[$name];
+            $ret = htmlspecialchars($_GET[$name]);
         }
         return $ret;
     }
@@ -801,5 +811,12 @@ class Utilities
             throw new RestBadParameterException('base64_data_badly_encoded');
         }
         return json_decode( $t, null, 4, JSON_THROW_ON_ERROR );
+    }
+    
+    public static function validateCheckboxValue( $v )
+    {
+        if( $v == 'true' || $v )
+            return true;
+        return false;
     }
 }

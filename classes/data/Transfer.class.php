@@ -173,6 +173,13 @@ class Transfer extends DBObject
             'default' => false,
         ),
 
+
+        'download_count' => array(
+            'type'    => 'uint',
+            'size'    => 'big',
+            'default' => 0,
+            'null'    => false,
+        ),
         
     );
 
@@ -270,6 +277,9 @@ class Transfer extends DBObject
         ),
         'expires' => array(
             'expires' => array()
+        ),
+        'downlaods' => array(
+            'download_count' => array()
         )
     );
 
@@ -327,6 +337,7 @@ class Transfer extends DBObject
     protected $guest_transfer_shown_to_user_who_invited_guest = true;
     protected $storage_filesystem_per_day_buckets = false;
     protected $storage_filesystem_per_hour_buckets = false;
+    protected $download_count = 0;
 
     
     /**
@@ -356,6 +367,7 @@ class Transfer extends DBObject
     {
         $this->storage_filesystem_per_day_buckets = Config::get('storage_filesystem_per_day_buckets');
         $this->storage_filesystem_per_hour_buckets = Config::get('storage_filesystem_per_hour_buckets');
+        $this->download_count = 0;
         
         if (!is_null($id)) {
             // Load from database if id given
@@ -901,13 +913,12 @@ class Transfer extends DBObject
                         'default' => false
                     );
                 }
-                
+
+                // default is false if not specified
                 foreach (array('available', 'advanced', 'default') as $p) {
                     if (!array_key_exists($p, $options[$name])) {
                         $options[$name][$p] = false;
                     }
-                    
-                    $options[$name][$p] = $options[$name][$p];
                 }
             }
             
@@ -1064,6 +1075,7 @@ class Transfer extends DBObject
             'password_version', 'password_encoding', 'password_encoding_string', 'password_hash_iterations'
             , 'client_entropy', 'roundtriptoken', 'guest_transfer_shown_to_user_who_invited_guest'
             , 'storage_filesystem_per_day_buckets', 'storage_filesystem_per_hour_buckets'
+            , 'download_count'
             
         ))) {
             return $this->$property;
@@ -1169,6 +1181,13 @@ class Transfer extends DBObject
                 return 0;
             }
             return $this->upload_end - $this->upload_start;
+        }
+
+        if ($property == 'days_to_expire') {
+            $now = time();
+            $datediff = $this->expires - $now;
+            $days_to_expire = round($datediff / (60 * 60 * 24));
+            return $days_to_expire;
         }
         
         if ($property == 'link') {
@@ -1278,6 +1297,8 @@ class Transfer extends DBObject
             $this->storage_filesystem_per_day_buckets = $value;
         } elseif ($property == 'storage_filesystem_per_hour_buckets') {
             $this->storage_filesystem_per_hour_buckets = $value;
+        } elseif ($property == 'download_count') {
+            $this->download_count = $value;
         } else {
             throw new PropertyAccessException($this, $property);
         }

@@ -182,13 +182,12 @@ class StorageFilesystem
                 $filesystems[$filesystem]['free_space'] -= $remaining_to_upload;
             }
         }
-        
         // Check if there is enough remaining space
         foreach ($filesystems as $filesystem => $info) {
             $required_space = array_sum(array_map(function ($file) {
                 return $file->size;
             }, $info['files']));
-            
+
             if ($required_space > $info['free_space']) {
                 return false;
             }
@@ -521,7 +520,7 @@ class StorageFilesystem
             }
 
             if ($chunk_size != $written) {
-                Logger::info('writeChunk() Can not write to : '.$chunkFile);
+                Logger::info('writeChunk() Can not write to : '.$file_path);
                 throw new StorageFilesystemCannotWriteException('writeChunk( '.$file_path, $file, $data, $offset, $written);
             }
 

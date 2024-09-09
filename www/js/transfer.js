@@ -53,10 +53,10 @@ if(!('filesender' in window)) window.filesender = {};
  */
 window.filesender.progresstracker = function() {
 
-    stamp: (new Date()).getTime();
-    mem: [];
-    memToKeep: 5;
-    disabled: false;
+    this.stamp = (new Date()).getTime();
+    this.mem = [];
+    this.memToKeep = 5;
+    this.disabled = false;
 
     /**
      * Reset the tracker for a fresh chunk
@@ -390,9 +390,11 @@ window.filesender.transfer = function() {
         if( !this.checkIsValidFileSize( file, errorhandler )) {
             return false;
         }
-        
-        if (typeof filesender.config.ban_extension == 'string') {
-            var banned = filesender.config.ban_extension.replace(/\s+/g, '');
+                
+        if (typeof window.filesender.config.ban_extension == 'string') {
+            filesender.ui.log("TESTING WITH ban_extension  " + window.filesender.config.ban_extension);
+            filesender.ui.log("TESTING WITH test2  " + window.filesender.config.test2);
+            var banned = window.filesender.config.ban_extension.replace(/\s+/g, '');
             banned = new RegExp('^(' + banned.replace(/,/g, '|') + ')$', 'g');
             var extension = this.getExtention(file);
             if (extension.match(banned)) {
@@ -487,6 +489,20 @@ window.filesender.transfer = function() {
         }
     };
 
+    /**
+     * Remove a file from list
+     * 
+     * @param int file index
+     */
+    this.fileCIDToIndex = function(cid) {
+        for (var i = 0; i < this.files.length; i++) {
+            if (this.files[i].cid == cid) {
+                return i;
+            }
+        }
+        return -1;
+    };
+    
     /**
      * Add a recipient
      * 
@@ -624,7 +640,7 @@ window.filesender.transfer = function() {
             files: [],
             file_index: 0,
             guest_token: null,
-            download_link: null,
+            download_link: this.download_link,
             roundtriptoken: this.roundtriptoken
         };
         
@@ -705,6 +721,7 @@ window.filesender.transfer = function() {
             case 'files': break;
             default: this[prop] = tracker[prop];
         }
+        this.download_link = tracker.download_link;
         
         this.failed_transfer_restart = true;
         
@@ -843,8 +860,8 @@ window.filesender.transfer = function() {
      * value this helps you present the information to the UI.
      */
     this.getMostRecentChunkDurations = function(file) {
-        d = [];
-        i = 0;
+        var d = [];
+        var i = 0;
         for(var id in this.watchdog_processes) {
             d[i] = -1;
             if(this.watchdog_processes[id].started != null) {
@@ -871,8 +888,8 @@ window.filesender.transfer = function() {
      * value this helps you present the information to the UI.
      */
     this.getMostRecentChunkFineBytes = function(file) {
-        d = [];
-        i = 0;
+        var d = [];
+        var i = 0;
         for(var id in this.watchdog_processes) {
             d[i] = -1;
             if(this.watchdog_processes[id].started != null) {
@@ -900,8 +917,8 @@ window.filesender.transfer = function() {
      * value this helps you present the information to the UI.
      */
     this.getIsWorkerOffending = function(file) {
-        d = [];
-        i = 0;
+        var d = [];
+        var i = 0;
         for(var id in this.watchdog_processes) {
             d[i] = false;
             if(this.watchdog_processes[id].started != null) {
@@ -1157,7 +1174,7 @@ window.filesender.transfer = function() {
             errorhandler = filesender.ui.error;
         
         this.status = 'running';
-        
+
         if(this.failed_transfer_restart) {
             return this.restartFailedTransfer(errorhandler);
         }
@@ -1543,5 +1560,19 @@ window.filesender.transfer = function() {
         this.legacy.form.append(file.node);
         
         this.legacy.form.submit();
+    };
+
+    /**
+     * Total size of this transfer
+     */
+    this.getTotalSize = function() {
+
+        var total_size = 0;
+        for(var j=0; j < this.files.length; j++)
+            total_size += this.files[j].size;
+        return total_size;
+    };
+    this.getFileCount = function() {
+        return this.files.length;
     };
 };

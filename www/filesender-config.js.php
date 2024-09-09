@@ -106,12 +106,11 @@ window.filesender.config = {
     crypto_crypt_name: '<?php echo Config::get('crypto_crypt_name') ?>',
     crypto_hash_name: '<?php echo Config::get('crypto_hash_name') ?>',
 
-    crypto_use_custom_password_code: '<?php echo GUI::use_webasm_pbkdf2_implementation() ?>',
-
     terasender_enabled: <?php  echo value_to_TF(Config::get('terasender_enabled')) ?>,
     terareceiver_enabled: <?php  echo value_to_TF(Config::get('terareceiver_enabled')) ?>,
     terasender_advanced: <?php echo value_to_TF(Config::get('terasender_advanced')) ?>,
     terasender_worker_count: <?php echo Config::get('terasender_worker_count') ?>,
+    terasender_worker_max_count: <?php echo Config::get('terasender_worker_max_count') ?>,
     terasender_start_mode: '<?php echo Config::get('terasender_start_mode') ?>',
     terasender_worker_file: 'js/terasender/terasender_worker.js',
     terasender_upload_endpoint: '<?php echo Config::get('site_url') ?>rest.php/file/{file_id}/chunk/{offset}',
@@ -178,6 +177,7 @@ $vfregex = str_replace('\\', '\\\\', $vfregex);
                 , download_complete:       "<?php echo Lang::tr('download_complete')->out(); ?>"
 /**/            , download_chunk_progress: "<?php echo Lang::tr('download_chunk_progress')->out(); ?>"
                 , file_not_found:          "<?php echo Lang::tr('file_not_found')->out(); ?>"
+                , session_expired_warning: "<?php echo Lang::tr('session_expired_warning')->out(); ?>"
 	},
     
     clientlogs: {
@@ -200,6 +200,8 @@ $vfregex = str_replace('\\', '\\\\', $vfregex);
     allow_filesystemwritablefilestream: <?php echo value_to_TF(Browser::instance()->allowFileSystemWritableFileStream) ?>,
 
 
+    test_for_unreadable_files: <?php echo value_to_TF(Config::get('test_for_unreadable_files')) ?>,
+
     upload_page_password_can_not_be_part_of_message_handling: "<?php echo Config::get('upload_page_password_can_not_be_part_of_message_handling') ?>",
 
     encryption_password_must_have_upper_and_lower_case: <?php echo value_to_TF(Config::get('encryption_password_must_have_upper_and_lower_case')) ?>,
@@ -207,6 +209,15 @@ $vfregex = str_replace('\\', '\\\\', $vfregex);
     encryption_password_must_have_special_characters: <?php echo value_to_TF(Config::get('encryption_password_must_have_special_characters')) ?>,
 
     download_verification_code_enabled: <?php echo value_to_TF(Config::get('download_verification_code_enabled')) ?>,
+
+    make_download_links_clickable: <?php echo value_to_TF(Config::get('make_download_links_clickable')) ?>,
+    client_send_current_timezone_to_server: <?php echo value_to_TF(Config::get('client_send_current_timezone_to_server')) ?>,
+
+
+    ui_use_datepicker_for_transfer_expire_time_selection: <?php echo value_to_TF(Config::get('ui_use_datepicker_for_transfer_expire_time_selection')) ?>,
+    ui_use_datepicker_for_guest_expire_time_selection: <?php echo value_to_TF(Config::get('ui_use_datepicker_for_guest_expire_time_selection')) ?>,
+
+    auth_warn_session_expired: <?php echo value_to_TF(Config::get('auth_warn_session_expired')) ?>,
 };
 
 <?php if(Config::get('force_legacy_mode')) { ?>
@@ -231,3 +242,6 @@ window.filesender.config.useFileSystemWritableFileStreamForDownload = function()
     return window.filesender.config.allow_filesystemwritablefilestream
         && window.filesender.config.isFileSystemWritableFileStreamAvailableForDownload();
 }
+
+
+

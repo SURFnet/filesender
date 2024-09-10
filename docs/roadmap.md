@@ -1,11 +1,9 @@
-==== BASE ====
 ---
 title: FileSender Roadmap
 ---
 
 ## FileSender Roadmap
 
-  
 
 The Filesender team is starting to collate items for roadmap
 development beyond Filesender v3.0. Further features are entirely
@@ -222,4 +220,3 @@ yet followed.
 
 https://github.com/coreinfrastructure/best-practices-badge/blob/master/doc/criteria.md
 
-==== BASE ====

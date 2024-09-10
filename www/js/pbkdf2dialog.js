@@ -1,4 +1,3 @@
-==== BASE ====
 // JavaScript Document
 
 /*
@@ -160,4 +159,3 @@ window.filesender.pbkdf2dialog = {
     },
     
 };
-==== BASE ====

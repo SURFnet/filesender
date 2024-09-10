@@ -221,9 +221,22 @@ class Utilities
         
         foreach ($al as $k => $v) {
 
-==== BASE ====
-        return utf8_encode(strftime($dateFormat, $timestamp));
-==== BASE ====
+            $fmt = new IntlDateFormatter(
+                $v,
+                $dateFormatStyle,
+                $timeFormatStyle,
+                $timezone,
+                IntlDateFormatter::GREGORIAN,
+                $dateFormat
+            );        
+            $ts = datefmt_format( $fmt , (int)$timestamp );
+            if( false !== $ts ) {
+                return mb_convert_encoding( $ts, 'UTF-8' );
+            }
+        }
+
+        Logger::error("formatDate() did not find a locale which should never happen");
+        return "";
     }
     
     /**
@@ -351,9 +364,29 @@ class Utilities
      */
     public static function getClientIP()
     {
-==== BASE ====
-        return isset($_SERVER[Config::get('client_ip_key')]) ? $_SERVER[Config::get('client_ip_key')] : '';
-==== BASE ====
+        $ips = array();
+        
+        $candidates = array_reverse((array)Config::get('client_ip_key'));
+        foreach($candidates as $candidate) {
+            if(!array_key_exists($candidate, $_SERVER)) continue;
+            
+            foreach(explode(',', $_SERVER[$candidate]) as $value) {
+                $ips[] = trim($value);
+            }
+        }
+        
+        $ips = array_filter($ips, function($ip) {
+            return filter_var($ip, FILTER_VALIDATE_IP, FILTER_FLAG_NO_PRIV_RANGE | FILTER_FLAG_NO_RES_RANGE);
+        });
+        
+        $ip = array_shift($ips);
+        if (is_null($ip)) {
+            if (array_key_exists('REMOTE_ADDR', $_SERVER)) {
+                return $_SERVER['REMOTE_ADDR']; // fallback
+            }
+            return '127.0.0.1';
+        }
+        return $ip;
     }
     
     /**

@@ -736,6 +736,5 @@ with_identity
 yes
 you_can_report_exception
 you_can_report_exception_by_email
-==== BASE ====
 you_can_send_client_logs
 you_generated_this_auth_secret_at

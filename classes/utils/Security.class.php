@@ -1,4 +1,3 @@
-==== BASE ====
 <?php
 
 /*
@@ -140,4 +139,3 @@ class Security
         return '';
     }
 }
-==== BASE ====

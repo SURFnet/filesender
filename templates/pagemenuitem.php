@@ -1,4 +1,3 @@
-==== BASE ====
 <?php
 
 include_once "vidattr.php";
@@ -67,4 +66,3 @@ function pagemenuitem($page) {
     echo '</li>';
 }
 
-==== BASE ====

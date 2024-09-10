@@ -2015,87 +2015,6 @@ If you want to find out the expiry timer for your SAML Identity Provider install
 * __available:__ since version 2.23
 * __comment:__ 
 
-### disable_directory_upload
-* __description:__ Disables the functionality to upload entire directories from the UI
-* __mandatory:__ no
-* __type:__ bool
-* __default:__ true
-* __available:__ since version 2.0
-* __comment:__ Set this to false to enable the directory upload functionality
-
-### directory_upload_button_enabled]
-* __description:__ Enables a button for directory upload on supported browsers
-* __mandatory:__ no
-* __type:__ bool
-* __default:__ true
-* __available:__ since version 2.6
-* __comment:__ Only on Firefox and Chrome in default templates
-
-### encryption_enabled
-* __description:__ set to false to disable. If set to true an option to enable file encryption of a transfer becomes available in the web-UI.
-* __mandatory:__ no
-* __type:__ boolean
-* __default:__ true
-* __available:__ since version 2.0
-* __comment:__
-
-### encryption_mandatory
-* __description:__ If set to true then every file uploaded must be encrypted.
-* __mandatory:__ no
-* __type:__ boolean
-* __default:__ false
-* __available:__ since version 2.23
-* __comment:__
-
-### encryption_mandatory_with_generated_password
-* __description:__ If set to true then every file uploaded must be encrypted and use a generated password. This enables encryption_mandatory automatically.
-* __mandatory:__ no
-* __type:__ boolean
-* __default:__ false
-* __available:__ since version 2.40
-* __comment:__
-
-
-
-
-### encryption_password_text_only_min_password_length
-* __description:__ If this is set then a password can avoid the password_must_have checks if it is at least this long.
-* __mandatory:__ no 
-* __type:__ int
-* __default:__ 40
-* __available:__ since version 2.26
-* __comment:__ Set to 0 to disable. Using this setting allows a passphrase that might contain all human language words without numbers, special characters etc
-     but which is still difficult enough to guess by brute force due to it's length and thus combination of words. If this setting is set to say 40 then
-     a password that is 40+ characters long will be accepted even when the encryption_password_must_have directives are in use and the password does not have
-     the must_have constraints met.
-
-
-
-
-### encryption_password_must_have_upper_and_lower_case
-* __description:__ set to true to force a user entered password to contain uPPer and LoWer case characters.
-* __mandatory:__ no 
-* __type:__ boolean
-* __default:__ false
-* __available:__ since version 2.23
-* __comment:__ 
-
-### encryption_password_must_have_numbers
-* __description:__ set to true to force a user entered password to contain numbers 453543.
-* __mandatory:__ no 
-* __type:__ boolean
-* __default:__ false
-* __available:__ since version 2.23
-* __comment:__ 
-
-### encryption_password_must_have_special_characters
-* __description:__ set to true to force a user entered password to contain special characters (%$^@ etc).
-* __mandatory:__ no 
-* __type:__ boolean
-* __default:__ false
-* __available:__ since version 2.23
-* __comment:__ 
-
 
 ### encryption_password_text_only_min_password_length
 * __description:__ If this is set then a password can avoid the password_must_have checks if it is at least this long.
@@ -2144,10 +2063,8 @@ If you want to find out the expiry timer for your SAML Identity Provider install
 * __recommend_leaving_at_default:__ true
 * __mandatory:__ no 
 * __type:__ int
-==== BASE ====
-* __default:__ latest version that the code supports.
-* __available:__ since version 2.6
-==== BASE ====
+* __default:__ 3
+* __available:__ updated in 3.0 beta7 an above to 3, was 1 since version 2.6
 * __comment:__
 
 
